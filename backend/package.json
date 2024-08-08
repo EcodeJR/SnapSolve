@@ -1,0 +1,16 @@
+{
+  "name": "snapsolve",
+  "version": "1.0.0",
+  "description": "SnapSolve is an app built on google's generative AI, It's purpose is to help people(must espacially students) get solutions to mathematical/scientific equations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Emmanuel Dalyop",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.16.0",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security"
+  }
+}
