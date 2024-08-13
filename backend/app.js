@@ -9,7 +9,7 @@ const authRoutes = require('./routes/auth');
 app.use(express.json());
 
 // Use the routes
-app.use('/', indexRoutes);
+app.use('/main', indexRoutes);
 app.use('/auth', authRoutes);
 
 // Start the server

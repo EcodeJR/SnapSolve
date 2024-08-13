@@ -18,7 +18,7 @@ function fileToGeneratePath(path, mimeType) {
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro"});
 
 //This block of code gets prompts from images uploaded by the user.
-async function imagePrompt() {
+async function ImagePrompt() {
     const prompt = "";
 
     const imageParts = [fileToGeneratePath("math.jpeg", "image/jpeg")];
@@ -30,14 +30,30 @@ async function imagePrompt() {
 }
 
 //This block of code gets promts from a users text.
-async function textPrompt() {
-    const prompt = "Give me steps to build navigation bar with html, css and javascript.";
-  
-    const result = await model.generateContent([prompt]);
-    const response = await result.response;
-    const text = response.text();
-    console.log(text);
+async function TextPrompt(message) {
+    try {
+        const prompt = message;
+        
+        // Assuming 'model.generateContent' returns a promise that resolves to an object
+        const result = await model.generateContent([prompt]);
+        
+        if (result && result.response) {
+            const response = result.response;
+            const text = await response.text();  // Await the response text
+            
+            console.log('Generated text:', text);  // Log the generated text
+            return text;  // Return the generated text
+        } else {
+            console.error('No valid response received:', result);
+            return 'Could not understand your message! Try againg bea little more clear and detailed.';  // Return an empty string if the response is invalid
+        }
+    } catch (error) {
+        console.error('Error generating content:', error);
+        return 'Internal Server Error! Try again later.';  // Return an empty string in case of an error
+    }
 }
+
   
 // imagePrompt();
-textPrompt()
+// textPrompt()
+module.exports = { TextPrompt, ImagePrompt };

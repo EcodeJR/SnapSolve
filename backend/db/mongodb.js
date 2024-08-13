@@ -12,7 +12,7 @@ async function connectToDatabase() {
         client = new MongoClient(uri);
         await client.connect();
         console.log("Connected to MongoDB!");
-        db = client.db('Snapsolve'); // Replace 'myDatabase' with your database name
+        db = client.db('Snapsolve');
     }
     return db;
 }
