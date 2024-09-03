@@ -75,7 +75,7 @@ const Navigation = () => {
     return(
         <nav className='w-full h-fit py-5 px-3 flex items-end md:items-center justify-between relative scroll-smooth text-blackMain'>
             <div className='flex items-center justify-center' ref={logoAni}>
-                <img src={logo} alt="Tanjira's Logo." className='w-[40px] md:w-[50px] lg:w-[50px]' />
+                <img src={logo} alt="Snapsolves's Logo." className='w-[40px] md:w-[50px] lg:w-[50px]' />
                 <h1 className='font-extrabold text-lg md:text-xl lg:text-2xl'>SnapSolve</h1>
             </div>
             <ul className='hidden md:flex items-center justify-around md:w-[70%] lg:w-[60%] uppercase'>
