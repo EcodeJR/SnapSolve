@@ -14,6 +14,8 @@ export default {
       'orangeMain': '#e27c3d',
       'seablueMain': '#03a8bc',
       'petchMain': '#dc5e47',
+      'greenMain': '#57cc99',
+      'redMain': '#f5014a',
     },
     extend: {},
   },

@@ -1,4 +1,6 @@
 import logo from '../assets/snapsolveLogo.png';
+//others
+import { NavLink } from 'react-router-dom';
 const Footer = () => {
     return ( 
         <footer className='p-3'>
@@ -10,7 +12,7 @@ const Footer = () => {
                 <div className='flex items-center justify-center my-3 md:my-0'>
                     <a href="#" className='text-sm md:text-base hover:font-bold text-blackMain uppercase mx-2'>Privacy Policies</a>
                     <a href="#" className='text-sm md:text-base hover:font-bold text-blackMain uppercase mx-2'>Rules</a>
-                    <a href="#" className='text-sm md:text-base text-whiteMain uppercase mx-2 bg-purpleMain rounded px-4 py-2 hover:shadow-xl text-center'>Try Now</a>
+                    <NavLink to="dashboard" className='text-sm md:text-base text-whiteMain uppercase mx-2 bg-purpleMain rounded px-4 py-2 hover:shadow-xl text-center'>Try Now</NavLink>
                 </div>
                 
             </div>

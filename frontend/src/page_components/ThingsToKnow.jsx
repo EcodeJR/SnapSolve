@@ -1,6 +1,8 @@
 import { HiOutlineArrowNarrowRight } from "react-icons/hi";
 import gem_icon from "../assets/gem_icon-nobg.png";
 import gem_text from "../assets/gem_text2-nobg.png";
+//others
+import { NavLink } from "react-router-dom";
 const ThingsToKnow = () => {
     return ( 
         <section className="py-4 px-2 text-center overflow-hidden">
@@ -63,7 +65,7 @@ const ThingsToKnow = () => {
                 <div className="flex items-center justify-between mt-6">
                     <p className="text-left text-sm md:text-base font-light text-whiteMain/90">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
                     <span className="flex items-center justify-center">
-                        <a href="#" className="font-light text-xl md:text-2xl">Try Now</a>
+                        <NavLink to="dashboard" className="font-light text-xl md:text-2xl">Try Now</NavLink>
                         <HiOutlineArrowNarrowRight className="text-2xl font-light mx-4" />
                     </span>
                     

@@ -1,7 +1,7 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import logo from '../assets/snapsolveLogo.png';
 import gsap from 'gsap';
-
+import { NavLink } from 'react-router-dom';
 // let links = ['Services', 'Benefits', 'Networks'];
 
 const Navigation = () => {
@@ -66,9 +66,9 @@ const Navigation = () => {
                     ))
                 }
                 <div className='flex items-center justify-center text-whiteMain font-bold text-xl'>
-                    <a href="#">Sign in</a>
+                    <NavLink to="/signin" onClick={toggleNav}>Sign in</NavLink>
                     <span className='mx-2'>/</span>
-                    <a href="#">Register</a>
+                    <NavLink to="/signup" onClick={toggleNav}>Register</NavLink>
                 </div>
     </ul> ;
 
@@ -76,7 +76,7 @@ const Navigation = () => {
         <nav className='w-full h-fit py-5 px-3 flex items-end md:items-center justify-between relative scroll-smooth text-blackMain'>
             <div className='flex items-center justify-center' ref={logoAni}>
                 <img src={logo} alt="Snapsolves's Logo." className='w-[40px] md:w-[50px] lg:w-[50px]' />
-                <h1 className='font-extrabold text-lg md:text-xl lg:text-2xl'>SnapSolve</h1>
+                <NavLink to='/' className='font-extrabold text-lg md:text-xl lg:text-2xl'>SnapSolve</NavLink>
             </div>
             <ul className='hidden md:flex items-center justify-around md:w-[70%] lg:w-[60%] uppercase'>
                 {
@@ -85,9 +85,9 @@ const Navigation = () => {
                     ))
                 }
                 <div className='flex items-center justify-center font-bold'>
-                    <a href="#">Sign in</a>
+                    <NavLink to="/signin">Sign in</NavLink>
                     <span className='mx-2'>/</span>
-                    <a href="#">Register</a>
+                    <NavLink to="/signup">Register</NavLink>
                 </div>
             </ul>
             {
