@@ -16,6 +16,7 @@ export default {
       'petchMain': '#dc5e47',
       'greenMain': '#57cc99',
       'redMain': '#f5014a',
+      'transparent': 'transparent'
     },
     extend: {},
   },

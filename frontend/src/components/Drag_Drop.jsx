@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { TiCamera } from "react-icons/ti";
+import { FcGallery } from "react-icons/fc";
+import { IoSend } from "react-icons/io5";
+import PropTypes from 'prop-types';
 
-const Drag_Drop = () => {
-  const [images, setImages] = useState([]);
+const Drag_Drop = ({ handleClick }) => {
+  const [img, setImages] = useState([]);
   const [dragging, setDragging] = useState(false);
 
   const handleDragOver = (e) => {
@@ -38,20 +40,20 @@ const Drag_Drop = () => {
   };
 
   return (
+    <>
     <div
-      className={`w-[70%] h-[60%] p-4 flex flex-col items-center justify-center border-dashed border-2 border-gray-400 ${
+      className={`w-[40vw] h-[60vh] p-4 flex flex-col items-center justify-center border-dashed border-2 border-gray-400 ${
         dragging ? 'bg-gray-100' : ''
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* <Camera size={48} color="gray" /> */}
-      <TiCamera className="text-gray-500 font-bold text-4xl" />
+      <FcGallery className="text-gray-500 font-bold text-4xl" />
       <p className="text-gray-600">Drag and drop images here or click to upload</p>
       <input
         type="file"
-        multiple
+        // multiple
         accept="image/*"
         className="hidden"
         id="image-input"
@@ -63,31 +65,36 @@ const Drag_Drop = () => {
       >
         Upload Images
       </label>
-      {/* <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer mt-2"
-        onClick={() => document.getElementById('image-input').click()}
-      >
-        Add Image
-      </button> */}
-      <div className="flex flex-wrap justify-center mt-4">
-        {images.map((image, index) => (
-          <div key={index} className="relative m-2">
-            <img
-              src={URL.createObjectURL(image)}
-              alt="uploaded image"
-              className="w-full h-48 object-fit"
-            />
-            <button
-              className="absolute top-0 right-0 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded cursor-pointer"
-              onClick={() => handleRemoveImage(index)}
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-      </div>
     </div>
+
+    <div className="w-full h-fit flex flex-col items-center justify-center">
+        <div className="flex flex-wrap justify-center m-4">
+            {img.map((image, index) => (
+              <div key={index} className="relative m-2">
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt="uploaded image"
+                  className="w-80 h-fit object-fit text-blackMain"
+                />
+                <button
+                  className="absolute top-0 right-0 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded cursor-pointer"
+                  onClick={() => handleRemoveImage(index)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        {img.length == 0 ?  <p className='py-2 px-4 text-whiteMain bg-redMain/50 font-bold text-base cursor-not-allowed uppercase rounded-lg'>Please Upload an image</p> : <button className="flex items-center justify-center text-2xl font-bold bg-greenMain text-whiteMain h-full p-5 rounded-full" onClick={() => handleClick(img)}><IoSend /></button>}
+        
+    </div>
+    </>
   );
+};
+
+// Add prop-types validation
+Drag_Drop.propTypes = {
+  handleClick: PropTypes.func.isRequired,
 };
 
 export default Drag_Drop;

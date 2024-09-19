@@ -88,7 +88,7 @@ const SignInPage = () => {
                             className='w-full h-full p-2 text-base rounded-md outline-none' required />
                                 {viewpwd ? <GoEyeClosed onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' /> : <GoEye onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' />}
                 </div>
-                        <input type="submit" value={loading ? "Loading..." : "Submit"} disabled={loading} className={`w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain'} text-whiteMain rounded-md cursor-pointer hover:shadow-2xl outline-none`} />
+                        <input type="submit" value={loading ? "Loading..." : "Submit"} disabled={loading} className={`w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain cursor-pointer'} text-whiteMain rounded-md hover:shadow-2xl outline-none`} />
                     </form>
                     {status == 200 ? <p className='text-base font-bold text-greenMain mt-3'>{message}</p> : <p className='text-base font-bold text-redMain mt-3'>{message}</p>}
                     
