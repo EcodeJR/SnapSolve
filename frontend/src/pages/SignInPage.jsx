@@ -31,6 +31,7 @@ const SignInPage = () => {
             password,
           });
           if (response.data.token) {
+            console.log(response.data)
             localStorage.setItem("token", response.data.token); // Save token for future use
             // console.log(response);
             localStorage.setItem("username", response.data.userName);

@@ -18,14 +18,25 @@ const Chat = () => {
     setConversation((prevConversation) => [...prevConversation, botResponse]);
 
     try {
+        // Retrieve the token from localStorage
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No token found. Please log in.');
+        }
       const res = await fetch('http://localhost:8080/main/chat', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Include the token in the header
         },
         body: JSON.stringify({ message: inputText }),
       });
       console.log(inputText)
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to send message');
+      }
       const data = await res.json();
       
       let msg = data.message;

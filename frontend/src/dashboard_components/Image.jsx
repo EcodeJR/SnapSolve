@@ -17,14 +17,26 @@ const Image = () => {
     setConversation((prevConversation) => [...prevConversation, userMessage, botResponse]);
 
     try {
+      const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No token found. Please log in.');
+        }
+
       const formData = new FormData();
       // Assuming you're sending the first image only, you can modify it to send multiple images if needed
       formData.append('image', imgArray[0]); 
 
       const res = await fetch('http://localhost:8080/main/image', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: formData,
       });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to upload image');
+    }
 
       const data = await res.json();
       console.log(data);
@@ -43,6 +55,21 @@ const Image = () => {
         formattedText = formattedText.replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>');
         // Add <br /> tags for new lines
         formattedText = formattedText.replace(/\n/g, '<br />');
+        // Detect and format code blocks, preserving indentation and escaping special characters
+        formattedText = formattedText.replace(/```(.*?)```/gs, (match, code) => {
+          // Convert code to HTML-safe characters
+          const escapedCode = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/\n/g, '<br>')  // Preserve newlines within the code block
+            .replace(/\s/g, '&nbsp;'); // Preserve spaces
+
+          return `<pre><code>${escapedCode}</code></pre>`;
+        });
+
       
         return formattedText;
       };
@@ -70,7 +97,7 @@ const Image = () => {
             { conversation.length === 0 ? ( 
                     <div className="flex items-center justify-center">
                         <img src={logo} alt="Snapsolves's Logo." draggable="true" className='w-[40px] md:w-[100px] lg:w-[200px]' />
-                    </div> 
+                    </div>
                 )
             :
                 ( conversation.map((msg, index) => (

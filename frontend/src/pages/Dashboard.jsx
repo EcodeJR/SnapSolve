@@ -14,6 +14,7 @@ const Dashboard = () => {
     const handleLogout = () => {
         setUsername(''); // Clear the username from state
         localStorage.removeItem('username'); // Remove username from localStorage
+        localStorage.removeItem('token');
     };
 
     useEffect(() => {

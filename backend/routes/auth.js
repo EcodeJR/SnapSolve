@@ -29,6 +29,16 @@ router.post('/signup', async (req, res) => {
         const newUser = new UserNew(username, email, passwordHash);
         await usersCollection.insertOne(newUser);
 
+        // Create a JWT token with userId
+        const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+
+        // Send the token as an HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true, 
+            secure: false, // Use 'secure' in production with HTTPS // Change to true when in production
+            sameSite: 'lax' // Needed if frontend and backend are on different origins
+          });
+        
         res.status(201).json({ message: 'User registered successfully', userName: username });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
@@ -58,6 +68,12 @@ router.post('/signin', async (req, res) => {
 
         // Generate a JWT token
         const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+        // Send the token as an HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true, 
+            secure: false, // Use 'secure' in production with HTTPS // Change to true when in production
+            sameSite: 'lax' // Needed if frontend and backend are on different origins
+        });
 
         res.json({ message: 'Sign-in successful', token, userName: user.username });
     } catch (error) {
