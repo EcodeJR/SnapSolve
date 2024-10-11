@@ -12,6 +12,8 @@ import { NavLink } from 'react-router-dom';
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
 const SignUpPage = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -33,6 +35,7 @@ const SignUpPage = () => {
           });
           setStatus(response.status);
           setMessage(response.data.message);
+          Cookies.set('username', response.data.userName, { expires: 3 });
           localStorage.setItem("username", response.data.userName);
           setUsername("")
           setEmail("")

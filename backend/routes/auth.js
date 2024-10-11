@@ -30,7 +30,7 @@ router.post('/signup', async (req, res) => {
         await usersCollection.insertOne(newUser);
 
         // Create a JWT token with userId
-        const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '3d' });
 
         // Send the token as an HTTP-only cookie
         res.cookie('token', token, {
@@ -67,7 +67,7 @@ router.post('/signin', async (req, res) => {
         }
 
         // Generate a JWT token
-        const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '3d' });
         // Send the token as an HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true, 

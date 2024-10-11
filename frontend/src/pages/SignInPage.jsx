@@ -12,6 +12,7 @@ import { NavLink } from 'react-router-dom';
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const SignInPage = () => {
     const [email, setEmail] = useState("");
@@ -32,8 +33,10 @@ const SignInPage = () => {
           });
           if (response.data.token) {
             console.log(response.data)
+            Cookies.set('token', response.data.token, { expires: 3 });
             localStorage.setItem("token", response.data.token); // Save token for future use
             // console.log(response);
+            Cookies.set('username', response.data.userName, { expires: 3 });
             localStorage.setItem("username", response.data.userName);
             setStatus(response.status);
             setMessage("Sign In Successful!");

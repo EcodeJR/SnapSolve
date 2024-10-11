@@ -10,8 +10,8 @@ const Image = () => {
    const handleSendImage = async (imgArray) => {
     if (imgArray.length === 0) return;
 
-    const userMessage = { sender: 'user', message: "Image sent" };
-    const botResponse = { sender: 'AI', message: "" };
+    const userMessage = { message: "Image sent" };
+    const botResponse = { botResponse: "" };
     
     // Add user's image message and bot's empty response
     setConversation((prevConversation) => [...prevConversation, userMessage, botResponse]);
@@ -40,7 +40,7 @@ const Image = () => {
 
       const data = await res.json();
       console.log(data);
-      let msg = data.message;
+      let msg = data.botResponse;
 
       const formatText = () => {
         if (!msg) return ''; // Return empty string if msg is undefined or null
@@ -78,13 +78,13 @@ const Image = () => {
       // Update the bot's response message in the conversation
       setConversation((prevConversation) => {
         const updatedConversation = [...prevConversation];
-        updatedConversation[updatedConversation.length - 1] = { sender: 'AI', message: formatText() };
+        updatedConversation[updatedConversation.length - 1] = { botResponse: formatText() };
         return updatedConversation;
       });
 
     } catch (error) {
       console.error('Error:', error);
-      const errorMessage = { sender: 'AI', message: 'Error communicating with server' };
+      const errorMessage = { message: 'Error communicating with server' };
       setConversation((prevConversation) => [...prevConversation, errorMessage]);
     }
   };
@@ -102,13 +102,15 @@ const Image = () => {
             :
                 ( conversation.map((msg, index) => (
                         <div className="w-full md:w-[80%] mx-auto h-full p-5" key={index}>
-                            <div className="w-full h-fit flex items-center justify-end my-4">
+                            {/* <div className="w-full h-fit flex items-center justify-end my-4">
                                 <pre className="text-lg md:text-xl">{msg.sender === 'user' ? 'You' : 'AI'}</pre>
-                            </div>
+                            </div> */}
                             <div className="w-full h-fit flex items-start justify-start my-5">
                                 <img src={gem_img} alt="Gemini Logo" className="w-10" />
-                                {
-                                    msg.message == "" ? <p className="text-lg m-2">Generating......</p> : <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.message }}></div>
+                                {msg.message === "" ? null : <div className="p-2 rounded-md"><p className="text-base">{msg.message}</p></div>}
+                                    {
+                                        msg.botResponse === "" ? <p className="text-lg m-2">Generating......</p> : <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.botResponse }}>
+                                    </div>
                                 }
                             </div>
                         </div>

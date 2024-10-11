@@ -45,7 +45,7 @@ router.post('/chat', authenticate, async (req, res) => {
             chat = { userId, messages: [] };
         }
 
-        chat.messages.push({ sender: 'user', message, timestamp: new Date() });
+        // chat.messages.push({ sender: 'user', message, timestamp: new Date() });
 
         if (chat._id) {
             await chatCollection.updateOne(
@@ -57,20 +57,20 @@ router.post('/chat', authenticate, async (req, res) => {
             chat._id = result.insertedId;
         }
 
-        // Call AI API (e.g., OpenAI)
+        // Call AI API
         const botResponse = await TextPrompt(message);
 
         // Save the bot's response to the database
-        chat.messages.push({ sender: 'bot', message: botResponse, timestamp: new Date() });
+        chat.messages.push({ message: message, botResponse: botResponse, timestamp: new Date() });
         await chatCollection.updateOne(
             { _id: chat._id },
             { $set: { messages: chat.messages } }
         );
 
         // Send the bot's response back to the user
-        res.json({ message: botResponse });
+        res.json({ botResponse: botResponse });
     } catch (error) {
-        console.error('Error in /chat route:', error);
+        console.log('Error in /chat route:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
@@ -95,9 +95,8 @@ router.post('/image', authenticate, upload.single('image'), async (req, res) => 
             chat = { userId, messages: [] };
         }
 
-        // Save the user's image submission
-        const userMessage = 'Image uploaded'; // Placeholder text for user's image submission
-        chat.messages.push({ sender: 'user', message: userMessage, timestamp: new Date() });
+         // Placeholder text for user's image submission
+        // chat.messages.push({ sender: 'user', message: userMessage, timestamp: new Date() });
 
         // Save/update chat history in database
         if (chat._id) {
@@ -113,17 +112,19 @@ router.post('/image', authenticate, upload.single('image'), async (req, res) => 
         // Process the image using AI API
         const botResponse = await ImagePrompt(imageFile.path); // Assuming ImagePrompt accepts the image path
 
+        // Save the user's image submission
+        const userMessage = 'Image uploaded';
         // Save the bot's response to the database
-        chat.messages.push({ sender: 'bot', message: botResponse, timestamp: new Date() });
+        chat.messages.push({ message: userMessage, botResponse: botResponse, timestamp: new Date() });
         await chatCollection.updateOne(
             { _id: chat._id },
             { $set: { messages: chat.messages } }
         );
 
         // Send the bot's response back to the user
-        res.json({ message: botResponse });
+        res.json({ botResponse: botResponse });
     } catch (error) {
-        console.error('Error processing image:', error);
+        console.log('Error processing /image route:', error);
         res.status(500).json({ error: 'Error processing image' });
     }
 });
@@ -140,17 +141,17 @@ router.get('/chat-history', async (req, res) => {
 
         // Extract the token (remove 'Bearer ' prefix)
         const token = authHeader.split(' ')[1];
-        console.log('Token:', token);
+        // console.log('Token:', token);
 
         // Verify the JWT and extract userId
         const decoded = jwt.verify(token, secretKey);
         const userId = decoded.userId;
-        console.log('Decoded userId:', userId);
+        // console.log('Decoded userId:', userId);
 
         const db = await connectToDatabase();
         const chatCollection = db.collection('Chat_History');
 
-        const chat = await chatCollection.findOne({ userId });
+        const chat = await chatCollection.findOne({ userId }, { sort: { _id: -1 } });
 
         if (!chat) {
             return res.status(404).json({ error: 'No chat history found' });
@@ -158,7 +159,7 @@ router.get('/chat-history', async (req, res) => {
 
         res.json(chat.messages);
     } catch (error) {
-        console.error('Error retrieving chat history:', error);
+        console.log('Error retrieving chat history:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

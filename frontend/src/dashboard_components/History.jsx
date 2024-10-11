@@ -1,75 +1,63 @@
-import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
-const History = () => {
-    const [chatHistory, setChatHistory] = useState({});
+const History = ({ onSelectChat }) => {
+    const [chatHistory, setChatHistory] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-      const fetchChatHistory = async () => {
-          try {
-              // Retrieve the token from localStorage
-              const token = localStorage.getItem('token');
-  
-              if (!token) {
-                  throw new Error('No token found in local storage');
-              }
-  
-              const response = await fetch('http://localhost:8080/main/chat-history', {
-                  method: 'GET',
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token}` // Send token in Authorization header
-                  }
-              });
-  
-              if (!response.ok) {
-                  const errData = await response.json();
-                  throw new Error(errData.error || 'Failed to fetch chat history');
-              }
-  
-              const data = await response.json();
-              console.log('Chat History:', data);
-              setChatHistory(data);
-          } catch (err) {
-              setError(err.message);
-          } finally {
-              setLoading(false);
-          }
-      };
-  
-      fetchChatHistory();
-  }, []);
-  
-    
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-    
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
+        const fetchChatHistory = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('No token found in local storage');
+
+                const response = await fetch('http://localhost:8080/main/chat-history', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Failed to fetch chat history');
+                }
+
+                const data = await response.json();
+                setChatHistory(data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchChatHistory();
+    }, []);
 
     return ( 
         <div className="flex flex-col items-center justify-start w-full h-full">
-            <Link to='/' className="font-bold text-3xl md:text-4xl lg:text-5xl">SnapSolve</Link>
             <div className="flex flex-col items-center justify-start my-5 w-full">
                 <h4 className="text-center text-xl md:text-2xl lg:text-3xl">Chat History</h4>
-                <div className="flex flex-col items-center justify-center w-full">
-                {chatHistory.length > 0 ? (
+                <div className="flex flex-col items-center justify-center w-full p-3">
+                    {loading ? <div>Loading</div> 
+                    : error ? (
+                        <div className="flex flex-col items-center justify-center">
+                            <p>Please login to see History</p>
+                        </div>
+                    ) : chatHistory.length > 0 ? (
                         <ul className="w-full">
-                        {chatHistory
-                          .filter(message => message.sender === "user")  // Only include messages from the user
-                          .map((message, index) => (
-                            <li 
-                              key={index} 
-                              className={`text-sm md:text-lg text-center bg-yellowMain/10 rounded-md my-2 cursor-pointer w-[90%] p-2`}
-                            >
-                              {message.message}
-                            </li>
-                          ))
-                        }
+                            {chatHistory.map((message,  index) => (
+                                <li 
+                                    key={index} 
+                                    className="text-sm md:text-lg text-center bg-yellowMain/10 rounded-md my-2 cursor-pointer w-[90%] p-2"
+                                    onClick={() => onSelectChat({ message: message.message, botResponse: message.botResponse })}
+                                >
+                                    {message.message}
+                                </li>
+                            ))}
                         </ul>
                     ) : (
                         <p>No chat history found</p>
@@ -77,7 +65,12 @@ const History = () => {
                 </div>
             </div>
         </div>
-     );
+    );
 };
- 
+
+// Define the expected prop types for the History component
+History.propTypes = {
+    onSelectChat: PropTypes.func.isRequired,
+};
+
 export default History;
