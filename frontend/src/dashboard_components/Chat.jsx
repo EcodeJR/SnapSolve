@@ -47,7 +47,7 @@ const Chat = ({ selectedChat }) => {
 
         try {
             const token = localStorage.getItem('token');
-            if (!token) throw new Error('No token found. Please log in.');
+            // if (!token) throw new Error('No token found. Please log in.');
 
             const res = await fetch('http://localhost:8080/main/chat', {
                 method: 'POST',

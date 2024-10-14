@@ -26,13 +26,23 @@ const SignInPage = () => {
     const handleSignIn = async (e) => {
         e.preventDefault();
         setLoading(true);
+        if (Cookies.get('token') || Cookies.get('username')) {
+          Cookies.remove('token', { path: '/', secure: true, sameSite: 'Strict' });
+          Cookies.remove('username', { path: '/', secure: true, sameSite: 'Strict' });
+        }
+      
+        if (localStorage.getItem('token') || localStorage.getItem('username')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('username');
+        }
+
         try {
           const response = await axios.post("http://localhost:8080/auth/signin", {
             email,
             password,
           });
           if (response.data.token) {
-            console.log(response.data)
+            // console.log(response.data)
             Cookies.set('token', response.data.token, { expires: 3 });
             localStorage.setItem("token", response.data.token); // Save token for future use
             // console.log(response);

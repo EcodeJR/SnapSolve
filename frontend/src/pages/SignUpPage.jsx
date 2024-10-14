@@ -27,27 +27,55 @@ const SignUpPage = () => {
     const handleSignUp = async (e) => {
         e.preventDefault();
         setLoading(true);
+      
+        // Clear cookies and localStorage
+        if (Cookies.get('token') || Cookies.get('username')) {
+          Cookies.remove('token', { path: '/', sameSite: 'Strict' });
+          Cookies.remove('username', { path: '/', sameSite: 'Strict' });
+        }
+        if (localStorage.getItem('token') || localStorage.getItem('username')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('username');
+        }
+      
         try {
           const response = await axios.post("http://localhost:8080/auth/signup", {
             username,
             email,
             password
           });
-          setStatus(response.status);
-          setMessage(response.data.message);
-          Cookies.set('username', response.data.userName, { expires: 3 });
-          localStorage.setItem("username", response.data.userName);
-          setUsername("")
-          setEmail("")
-          setPassword("");
-          navigate('/dashboard', { replace: true });
+      
+          // Check if a token is returned
+          if (response.data.token) {
+            setStatus(response.status);
+            setMessage(response.data.message);
+      
+            // Set cookies and localStorage
+            // const isProduction = process.env.REACT_APP_NODE_ENV === 'production';secure: isProduction,secure: isProduction,
+            Cookies.set('token', response.data.token, { expires: 3,  sameSite: 'Strict' });
+            localStorage.setItem("token", response.data.token);
+            Cookies.set('username', response.data.userName, { expires: 3,  sameSite: 'Strict' });
+            localStorage.setItem("username", response.data.userName);
+      
+            // Clear form fields
+            setUsername("");
+            setEmail("");
+            setPassword("");
+      
+            // Redirect to dashboard
+            navigate('/dashboard', { replace: true });
+          } else {
+            setStatus(response.status);
+            setMessage("Sign up Failed");
+          }
         } catch (err) {
-            setStatus(err.status);
-            setMessage(err.response.data.message);
+          setStatus(err.response ? err.response.status : 500);
+          setMessage(err.response ? err.response.data.message : "Something went wrong");
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
       };
+      
 
       const handleViewpwd = () => {
         setViewpwd(!viewpwd);
