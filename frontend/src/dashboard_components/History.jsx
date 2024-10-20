@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { CiWarning } from "react-icons/ci";
-import { CiTrash } from "react-icons/ci";
+import { CiWarning, CiTrash } from "react-icons/ci";
 import { Link } from "react-router-dom";
 
 const History = ({ onSelectChat }) => {
@@ -32,7 +31,6 @@ const History = ({ onSelectChat }) => {
 
                 const data = await response.json();
                 setChatHistory(data);
-                // console.log(data)
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -45,12 +43,12 @@ const History = ({ onSelectChat }) => {
 
     const toggleDeleteHistory = (messageId) => {
         setSelectedMessageId(messageId);  // Set the selected message ID
-        console.log(messageId);
         setDeleteHistory(!deleteHistory);
     };
 
     const deleteChatMessage = async (messageId) => {
         try {
+            setLoading(true); // Set loading while deleting
             const token = localStorage.getItem('token');
             if (!token) throw new Error('Register or Signin to View History.');
 
@@ -67,16 +65,15 @@ const History = ({ onSelectChat }) => {
                 throw new Error(errData.error || 'Failed to delete chat message');
             }
 
-            // const data = await response.json();
-            // console.log(data.message);  // Success message from backend
-            toggleDeleteHistory
-
-            // Optionally, remove the deleted message from the state
+            // Remove the deleted message from the state
             setChatHistory((prevChatHistory) => prevChatHistory.filter(msg => msg._id !== messageId));
+
+            // Close the delete confirmation modal after deletion
+            toggleDeleteHistory();
         } catch (err) {
             setError(err.message);
         } finally {
-            setLoading(false);
+            setLoading(false); // Turn off loading after the operation
         }
     };
 
@@ -86,7 +83,7 @@ const History = ({ onSelectChat }) => {
             <h2 className='py-4 font-bold text-2xl text-blackMain'>Do you wish to delete!</h2>
             <div className='w-full flex items-center justify-evenly'>
                 <button onClick={() => deleteChatMessage(selectedMessageId)} className='py-2 px-6 text-lg font-bold bg-redMain rounded-md'>YES</button>
-                <button onClick={toggleDeleteHistory} className='py-2 px-6 text-lg font-bold bg-greenMain rounded-md'>NO</button>
+                <button onClick={() => toggleDeleteHistory()} className='py-2 px-6 text-lg font-bold bg-greenMain rounded-md'>NO</button>
             </div>
         </div>;
 
@@ -108,9 +105,7 @@ const History = ({ onSelectChat }) => {
                                 <li 
                                     key={index} 
                                     className="text-sm md:text-lg text-center bg-yellowMain/10 rounded-md my-2 cursor-pointer w-[90%] p-2 flex items-center justify-between overflow-hidden"
-                                    onClick={() => {
-                                        onSelectChat({ message: message.message, botResponse: message.botResponse });
-                                      }}
+                                    onClick={() => onSelectChat({ message: message.message, botResponse: message.botResponse })}
                                 >
                                     <p className='w-fit'>
                                        {message.message} 
@@ -118,7 +113,10 @@ const History = ({ onSelectChat }) => {
                                     
                                     <CiTrash 
                                         className='text-xl font-bold text-redMain hover:animate-pulse' 
-                                        onClick={() => toggleDeleteHistory(message._id)}  // Set message ID for deletion
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Prevent triggering chat selection when deleting
+                                            toggleDeleteHistory(message._id);
+                                        }}  
                                     />
                                 </li>
                             ))}

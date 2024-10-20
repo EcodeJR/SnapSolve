@@ -8,7 +8,7 @@ const { TextPrompt, ImagePrompt } = require('../ai/snap_ai');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const jwt = require('jsonwebtoken'); // For verifying the JWT
-const authenticate = require('../authenticate/authMiddleware');
+const authenticateOptional = require('../authenticate/authMiddleware');
 const secretKey = process.env.JWT_SECRET_KEY || 'your_secret_key';
 
 router.get('/', async (req, res) => {
@@ -28,8 +28,8 @@ router.post('/add', async (req, res) => {
 });
 
 // Apply middleware to the /chat route
-router.post('/chat', authenticate, async (req, res) => {
-    const userId = req.userId; // Extracted from middleware
+router.post('/chat', authenticateOptional, async (req, res) => {
+    const userId = req.userId; // This will be undefined if the user is not authenticated
     const { message } = req.body;
 
     if (!message) {
@@ -37,70 +37,14 @@ router.post('/chat', authenticate, async (req, res) => {
     }
 
     try {
-        // Save the user's message to the database
-        const db = await connectToDatabase();
-        const chatCollection = db.collection('Chat_History');
-        let chat = await chatCollection.findOne({ userId });
+        const botResponse = await TextPrompt(message); // Get bot response
 
-        if (!chat) {
-            // chat = { userId, messages: [] };
-            // Call AI API
-            const botResponse = await TextPrompt(message);
-            res.json({ botResponse: botResponse });
+        // If the user is not authenticated, just return the bot's response without saving
+        if (!userId) {
+            return res.json({ botResponse: botResponse });
         }
 
-        // chat.messages.push({ sender: 'user', message, timestamp: new Date() });
-
-        if (chat._id) {
-            await chatCollection.updateOne(
-                { _id: chat._id },
-                { $set: { messages: chat.messages } }
-            );
-        } else {
-            const result = await chatCollection.insertOne(chat);
-            chat._id = result.insertedId;
-        }
-
-        // Call AI API
-        const botResponse = await TextPrompt(message);
-
-        // Create a new message object with a unique _id
-        const newMessage = {
-            _id: new ObjectId(),
-            message: message,
-            botResponse: botResponse,
-            timestamp: new Date()
-        };
-
-        // Add the new message to the chat.messages array
-        chat.messages.push(newMessage);
-
-        // Update the document in the database
-        await chatCollection.updateOne(
-            { _id: chat._id },
-            { $push: { messages: newMessage } }
-        );
-
-        // Send the bot's response back to the user
-        res.json({ botResponse: botResponse });
-    } catch (error) {
-        console.log('Error in /chat route:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-});
-
-
-// Define a route to handle image uploads
-router.post('/image', authenticate, upload.single('image'), async (req, res) => {
-    const userId = req.userId; // Extracted from middleware
-    const imageFile = req.file; // multer adds the uploaded file to req.file
-
-    if (!imageFile) {
-        return res.status(400).json({ error: 'No image file uploaded' });
-    }
-
-    try {
-        // Connect to the database
+        // User is authenticated, proceed to save the chat
         const db = await connectToDatabase();
         const chatCollection = db.collection('Chat_History');
         let chat = await chatCollection.findOne({ userId });
@@ -109,37 +53,76 @@ router.post('/image', authenticate, upload.single('image'), async (req, res) => 
             chat = { userId, messages: [] };
         }
 
-        // Process the image using AI API (Do this before updating chat)
-        const botResponse = await ImagePrompt(imageFile.path); // Assuming ImagePrompt accepts the image path
-
-        const userMessage = 'Image uploaded'; // Define the userMessage after image upload
-
-        // Create a new message object with the image upload and AI response
         const newMessage = {
-            _id: new ObjectId(), // Create a unique _id for the new message
-            message: userMessage, // User's message
-            botResponse: botResponse, // AI's response
-            timestamp: new Date() // Timestamp for the message
+            _id: new ObjectId(),
+            message,
+            botResponse,
+            timestamp: new Date()
         };
 
-        // If chat exists, update the chat history
-        if (chat._id) {
-            await chatCollection.updateOne(
-                { _id: chat._id }, // Find the chat by _id
-                { $push: { messages: newMessage } } // Push the new message into the messages array
-            );
-        } else {
-            // If no chat exists, create a new chat document with the first message
-            chat.messages.push(newMessage);
-            const result = await chatCollection.insertOne(chat);
-            chat._id = result.insertedId; // Assign the new chat _id
+        await chatCollection.updateOne(
+            { userId },
+            { $push: { messages: newMessage } },
+            { upsert: true }  // Create chat if it doesn't exist
+        );
+
+        res.json({ botResponse: botResponse });
+
+    } catch (error) {
+        console.error('Error in /chat route:', error);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+});
+
+
+
+router.post('/image', authenticateOptional, upload.single('image'), async (req, res) => {
+    const userId = req.userId; // This will be undefined if the user is not authenticated
+    const imageFile = req.file;
+
+    if (!imageFile) {
+        return res.status(400).json({ error: 'No image file uploaded' });
+    }
+
+    try {
+        const botResponse = await ImagePrompt(imageFile.path); // Get bot response
+
+        // If the user is not authenticated, just return the bot's response without saving
+        if (!userId) {
+            return res.json({ botResponse: botResponse });
         }
 
-        // Send the bot's response back to the user
+        // User is authenticated, proceed to save the chat
+        const db = await connectToDatabase();
+        const chatCollection = db.collection('Chat_History');
+        let chat = await chatCollection.findOne({ userId });
+
+        if (!chat) {
+            chat = { userId, messages: [] };
+        }
+
+        const newMessage = {
+            _id: new ObjectId(),
+            message: 'Image uploaded',
+            botResponse,
+            timestamp: new Date()
+        };
+
+        await chatCollection.updateOne(
+            { userId },
+            { $push: { messages: newMessage } },
+            { upsert: true }  // Create chat if it doesn't exist
+        );
+
         res.json({ botResponse: botResponse });
+
     } catch (error) {
-        console.log('Error processing /image route:', error);
-        res.status(500).json({ error: 'Error processing image' });
+        console.error('Error in /image route:', error);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Error processing image' });
+        }
     }
 });
 

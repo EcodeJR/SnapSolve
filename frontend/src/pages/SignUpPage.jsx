@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const SignUpPage = () => {
+    const [firstname, setFirstname] = useState("");
+    const [lastname, setLastname] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -40,6 +42,8 @@ const SignUpPage = () => {
       
         try {
           const response = await axios.post("http://localhost:8080/auth/signup", {
+            firstname,
+            lastname,
             username,
             email,
             password
@@ -58,6 +62,8 @@ const SignUpPage = () => {
             localStorage.setItem("username", response.data.userName);
       
             // Clear form fields
+            setFirstname("");
+            setLastname("");
             setUsername("");
             setEmail("");
             setPassword("");
@@ -103,7 +109,11 @@ const SignUpPage = () => {
                     </h4>
                     <p className='text-blackMain/60 text-center text-base mb-3'>Welcome to SnapSolve, Let’s make today legendary</p>
                     <form onSubmit={handleSignUp} className='w-full flex flex-col items-center justify-center'>
-                        <input type="text" id="name" name="name" placeholder='Name' value={username}
+                    <input type="text" id="Firstname" name="firstname" placeholder='Firstname' value={firstname}
+          onChange={(e) => setFirstname(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
+          <input type="text" id="Lastname" name="lastname" placeholder='Lastname' value={lastname}
+          onChange={(e) => setLastname(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
+                        <input type="text" id="name" name="name" placeholder='Username' value={username}
           onChange={(e) => setUsername(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
                         <input type="email" id="email" name="email" placeholder='Email' value={email}
           onChange={(e) => setEmail(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />

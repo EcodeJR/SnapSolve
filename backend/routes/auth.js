@@ -10,11 +10,11 @@ const SECRET_KEY = process.env.JWT_SECRET_KEY || 'your_secret_key';
 
 // Sign-up route
 router.post('/signup', async (req, res) => {
-    const { username, email, password } = req.body; // Extract data from request body
+    const { firstname, lastname, username, email, password } = req.body; // Extract data from request body
 
     // Validate required fields
-    if (!username || !email || !password) {
-        return res.status(400).json({ message: 'Username, email, and password are required' });
+    if ( !firstname || !lastname || !username || !email || !password) {
+        return res.status(400).json({ message: 'Firstname, Lastname, Username, email, and password are required' });
     }
 
     try {
@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
         const passwordHash = await bcrypt.hash(password, 10);
 
         // Create a new instance of UserNew with the provided data
-        const newUser = new UserNew(username, email, passwordHash);
+        const newUser = new UserNew(firstname, lastname, username, email, passwordHash);
 
         // Insert the new user instance into the database
         const result = await usersCollection.insertOne(newUser);

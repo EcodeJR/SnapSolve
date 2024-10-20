@@ -38,34 +38,36 @@ const Chat = ({ selectedChat }) => {
     // Function to handle sending new text (not related to history)
     const handleSendText = async () => {
         if (!inputText.trim()) return;
-
+    
         const newMessage = { message: inputText };
         setConversation((prevConversation) => [...prevConversation, newMessage]);
-
+    
         const botResponse = { botResponse: "" };
         setConversation((prevConversation) => [...prevConversation, botResponse]);
-
+    
         try {
             const token = localStorage.getItem('token');
-            // if (!token) throw new Error('No token found. Please log in.');
-
+            const headers = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+    
             const res = await fetch('http://localhost:8080/main/chat', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
+                headers,
                 body: JSON.stringify({ message: inputText }),
             });
-
+    
             if (!res.ok) {
                 const errData = await res.json();
                 throw new Error(errData.error || 'Failed to send message');
             }
-
+    
             const data = await res.json();
             let msg = data.botResponse;
-
+    
             // Format the bot's response
             setConversation((prevConversation) => {
                 const updatedConversation = [...prevConversation];
@@ -78,6 +80,12 @@ const Chat = ({ selectedChat }) => {
             setConversation((prevConversation) => [...prevConversation, errorMessage]);
         }
         setInputText('');
+    };
+    
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleSendText();
+        }
     };
 
     return ( 
@@ -112,7 +120,7 @@ const Chat = ({ selectedChat }) => {
             <div className="w-full p-2">
                 <div className="w-[80%] p-2 mx-auto flex items-center justify-between border-[2px] border-greenMain rounded-full overflow-hidden">
                     <input type="text" id="chat_box" placeholder="Ask Me Anything.." value={inputText}
-                    onChange={(e) => setInputText(e.target.value)} className="w-full p-3 text-lg outline-none rounded-full bg-transparent" />
+                    onChange={(e) => setInputText(e.target.value)} onKeyDown={handleKeyDown} className="w-full p-3 text-lg outline-none rounded-full bg-transparent" />
                     <button className="flex items-center justify-center text-2xl font-bold bg-greenMain text-whiteMain h-full p-5 rounded-full" onClick={handleSendText}>
                         <IoSend />
                     </button>
