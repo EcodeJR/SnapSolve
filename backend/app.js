@@ -12,10 +12,13 @@ const app = express();
 app.use(express.json());
 
 // Use CORS middleware to allow requests from specific origins
+const allowedOrigins = ['http://localhost:5173', 'https://2kh17n9g-5173.uks1.devtunnels.ms/'];
+
 app.use(cors({
-  origin: 'http://localhost:5173', // Frontend origin
+  origin: allowedOrigins, // List of allowed origins
   credentials: true
 }));
+
 
 // Middleware to parse cookies
 app.use(cookieParser());

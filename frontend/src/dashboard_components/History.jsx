@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { CiWarning, CiTrash } from "react-icons/ci";
 import { Link } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 const History = ({ onSelectChat }) => {
     const [chatHistory, setChatHistory] = useState([]);
@@ -13,7 +14,7 @@ const History = ({ onSelectChat }) => {
     useEffect(() => {
         const fetchChatHistory = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = Cookies.get('token');
                 if (!token) throw new Error('Register or Signin to View History.');
 
                 const response = await fetch('http://localhost:8080/main/chat-history', {
@@ -49,7 +50,7 @@ const History = ({ onSelectChat }) => {
     const deleteChatMessage = async (messageId) => {
         try {
             setLoading(true); // Set loading while deleting
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             if (!token) throw new Error('Register or Signin to View History.');
 
             const response = await fetch(`http://localhost:8080/main/delete-history/${messageId}`, {
@@ -91,7 +92,7 @@ const History = ({ onSelectChat }) => {
         <div className="flex flex-col items-center justify-start w-full h-full">
             {delHistory}
             <div className="flex flex-col items-center justify-start my-5 w-full">
-                <Link to='/' className='text-2xl md:text-3xl lg:text-4xl my-3 font-bold text-center'>SnapSolve</Link>
+                <Link to='/' className='text-3xl md:text-4xl lg:text-5xl my-3 font-bold text-center'>SnapSolve</Link>
                 <h4 className="text-center text-xl md:text-2xl lg:text-3xl">Chat History</h4>
                 <div className="flex flex-col items-center justify-center w-full p-3">
                     {loading ? <div>Loading</div> 
@@ -104,7 +105,7 @@ const History = ({ onSelectChat }) => {
                             {chatHistory.map((message,  index) => (
                                 <li 
                                     key={index} 
-                                    className="text-sm md:text-lg text-center bg-yellowMain/10 rounded-md my-2 cursor-pointer w-[90%] p-2 flex items-center justify-between overflow-hidden"
+                                    className="text-sm md:text-lg text-center bg-yellowMain/10 rounded-md my-2 mx-auto cursor-pointer w-[90%] p-2 flex items-center justify-between overflow-hidden"
                                     onClick={() => onSelectChat({ message: message.message, botResponse: message.botResponse })}
                                 >
                                     <p className='w-fit'>

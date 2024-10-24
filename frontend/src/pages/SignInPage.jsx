@@ -93,16 +93,16 @@ const SignInPage = () => {
                     <p className='text-blackMain/60 text-center text-base mb-3'>Welcome back, Let’s make today legendary</p>
                     <form onSubmit={handleSignIn} className='w-full flex flex-col items-center justify-center'>
                         <input type="email" id="email" name="email" placeholder='Email' value={email}
-          onChange={(e) => setEmail(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
+          onChange={(e) => setEmail(e.target.value)} className='w-[90%] lg:w-[70%] p-3 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
                         <div className='w-[90%] lg:w-[70%] border-[1px] border-blackMain/70 rounded-md flex items-center justify-around my-2'>
                             <input type={viewpwd ? "text" : "password"} 
                             id="password" name="password" placeholder='Password' 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
-                            className='w-full h-full p-2 text-base rounded-md outline-none' required />
+                            className='w-full h-full p-3 text-base rounded-md outline-none' required />
                                 {viewpwd ? <GoEyeClosed onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' /> : <GoEye onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' />}
                 </div>
-                        <input type="submit" value={loading ? "Loading..." : "Submit"} disabled={loading} className={`w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain cursor-pointer'} text-whiteMain rounded-md hover:shadow-2xl outline-none`} />
+                        <input type="submit" value={loading ? "Loading..." : "Submit"} disabled={loading} className={`w-[90%] lg:w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain cursor-pointer'} text-whiteMain rounded-md hover:shadow-2xl outline-none`} />
                     </form>
                     {status == 200 ? <p className='text-base font-bold text-greenMain mt-3'>{message}</p> : <p className='text-base font-bold text-redMain mt-3'>{message}</p>}
                     

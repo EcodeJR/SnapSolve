@@ -89,11 +89,11 @@ const Chat = ({ selectedChat }) => {
     };
 
     return ( 
-        <section className="w-full h-fit overflow-hidden flex flex-col items-center justify-between">
+        <section className="w-full min-h-[70vh] relative overflow-hidden flex flex-col items-center justify-between">
             <section className="w-full h-full flex flex-col items-center justify-center">
                 { conversation.length === 0 ? ( 
-                        <div className="flex flex-col items-center justify-center">
-                            <RiMessage3Line className="text-5xl md:text-8xl font-bold" />
+                        <div className="h-full w-full flex flex-col items-center justify-center">
+                            <RiMessage3Line className="text-7xl md:text-8xl font-bold" />
                             <h1 className="text-xl font-bold">Enter chat..</h1>
                         </div> 
                     )
@@ -117,11 +117,11 @@ const Chat = ({ selectedChat }) => {
                 }
             </section>
 
-            <div className="w-full p-2">
-                <div className="w-[80%] p-2 mx-auto flex items-center justify-between border-[2px] border-greenMain rounded-full overflow-hidden">
+            <div className="w-full p-2 absoulte flex items-center justify-center bottom-0 left-0">
+                <div className="w-[90vw] lg:w-[80vw] p-2 mx-auto flex items-center justify-between border-[2px] border-greenMain rounded-full overflow-hidden">
                     <input type="text" id="chat_box" placeholder="Ask Me Anything.." value={inputText}
                     onChange={(e) => setInputText(e.target.value)} onKeyDown={handleKeyDown} className="w-full p-3 text-lg outline-none rounded-full bg-transparent" />
-                    <button className="flex items-center justify-center text-2xl font-bold bg-greenMain text-whiteMain h-full p-5 rounded-full" onClick={handleSendText}>
+                    <button className="flex items-center justify-center text-2xl font-bold bg-greenMain text-whiteMain h-full p-3 lg:p-5 rounded-full" onClick={handleSendText}>
                         <IoSend />
                     </button>
                 </div>

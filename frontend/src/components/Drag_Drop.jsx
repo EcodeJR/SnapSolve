@@ -50,7 +50,7 @@ const Drag_Drop = ({ handleClick }) => {
   return (
     <>
       <div
-        className={`w-[40vw] h-[60vh] p-4 flex flex-col items-center justify-center border-dashed border-2 border-gray-400 ${
+        className={` w-[80%] lg:w-[40vw] h-[60vh] p-4 flex flex-col items-center justify-center border-dashed border-2 border-gray-400 ${
           dragging ? 'bg-gray-100' : ''
         }`}
         onDragOver={handleDragOver}

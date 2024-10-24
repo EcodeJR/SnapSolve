@@ -5,22 +5,26 @@ import History from "../dashboard_components/History";
 import { Link } from "react-router-dom";
 import { IoMdMoon } from "react-icons/io";
 import { MdSunny } from "react-icons/md";
+import { RiMenuFold4Line } from "react-icons/ri";
+import { IoMdCloseCircleOutline } from "react-icons/io";
+import Cookies from 'js-cookie';
 
 const Dashboard = () => {
     const [darkMode, setDarkMode] = useState(false);
     const [chatVisible, setChatVisible] = useState(false); // Control visibility of the chat
     const [username, setUsername] = useState("");
     const [selectedChat, setSelectedChat] = useState(null); // Store the selected chat history
+    const [showHistory, setShowHistory] = useState(false);
 
     // Handle logout: Clear the username from state and localStorage
     const handleLogout = () => {
         setUsername(''); // Clear the username from state
-        localStorage.removeItem('username'); // Remove username from localStorage
-        localStorage.removeItem('token');
+        Cookies.remove('token', { path: '/', secure: true, sameSite: 'Strict' });
+        Cookies.remove('username', { path: '/', secure: true, sameSite: 'Strict' });
     };
 
     useEffect(() => {
-        const user = localStorage.getItem("username");
+        const user = Cookies.get('username');
         setUsername(user);
     }, [username]);
 
@@ -36,6 +40,9 @@ const Dashboard = () => {
     const toggleImage = () => {
         setChatVisible(false); // Show the image component
     };
+    const toggleHistoryBTN = () => {
+        setShowHistory(!showHistory);
+    }
 
     return (
         <section
@@ -44,17 +51,26 @@ const Dashboard = () => {
                 : `bg-whiteMain text-blackMain h-screen fixed top-0 left-0 overflow-hidden w-full flex`
             }
         >
-            <div className="w-full lg:w-[30vw] h-screen p-5 overflow-y-scroll">
+            <div className={`w-full lg:w-[30vw] h-screen p-5 overflow-y-scroll 
+                ${showHistory ? 'block fixed top-0 left-0 z-50' : 'hidden'} lg:block 
+                ${darkMode ? `bg-blackMain text-whiteMain` : `bg-whiteMain text-blackMain`}`}>
+                <button className="block md:hidden lg:hidden" onClick={toggleHistoryBTN}><IoMdCloseCircleOutline className="text-5xl text-redMain font-bold" /></button>
+                
                 <History onSelectChat={(chat) => {
                     setSelectedChat(chat); // Set selected chat history
                     setChatVisible(true);  // Ensure Chat is visible when a chat is selected
+                    setShowHistory(false);
                 }} />
             </div>
             <div className="w-full h-full p-5 overflow-y-scroll">
                 <div className="flex items-center justify-between p-2">
-                    <h5 className="font-semibold text-base md:text-lg lg:text-lg">
+                    <div className="flex items-center justify-center">
+                        <button onClick={toggleHistoryBTN}><RiMenuFold4Line className="text-4xl block lg:hidden" /></button>
+                        <h5 className="font-semibold mx-3 text-base md:text-lg lg:text-lg">
                         {username == null ? `Hey Explorer, Welcome` : `Hey ${username}, Welcome`}
-                    </h5>
+                        </h5>
+                    </div>
+                    
                     <div className="flex items-center justify-center">
                         <button onClick={toggleDarkMode} className="px-2">
                             {darkMode
