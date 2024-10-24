@@ -1,9 +1,50 @@
 import gem_icon from "../assets/gem_icon-nobg.png";
 import { TbMailFast } from "react-icons/tb";
 import { TbPhoneOutgoing } from "react-icons/tb";
+import { useState } from 'react';
+// import { toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+
+
 const GetInTouch = () => {
+    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const [loading, setLoading] = useState(false);
+    // const notify = () => toast.success("Message sent successfully!");
+    // const errorT = () => toast.error("Error sending message!");
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+  
+      try {
+        const res = await fetch('http://localhost:8080/main/sendEmail', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        if (res.ok) {
+            setFormData({ name: '', email: '', message: '' });
+            alert('Message sent successfully!');
+        } else {
+          alert('Error sending message!');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error sending message!');
+      } finally {
+        setLoading(false); // Stop loading after the request is done
+      }
+    };
+  
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
     return ( 
-        <section className="w-full py-4 px-3 overflow-hidden">
+        <section className="w-full py-4 px-3 overflow-hidden relative">
+            
             <h2 className="font-bold text-4xl md:text-4xl lg:text-6xl text-blackMain font-[Montserrat] text-center uppercase my-5">Get in Touch</h2>
             <div className="flex flex-col lg:flex-row items-center justify-evenly p-5">
                 <div className="flex flex-col items-start justify-center mx-auto py-3 relative">
@@ -14,11 +55,21 @@ const GetInTouch = () => {
                     <a href="mailto:emmanueldcode@gamil.com" className="text-base md:text-lg font-bold text-blackMain/80 uppercase hover:text-purpleMain flex items-center justify-between"><TbMailFast className="text-3xl mx-2" /> emmanueldcode@gmail.com</a>
                     <a href="+2347051242451" className="text-base md:text-lg font-bold text-blackMain/80 uppercase hover:text-purpleMain flex items-center justify-between"><TbPhoneOutgoing className="text-3xl mx-2" /> +2347051242451</a>
                 </div>
-                <form action="post" className="w-[100%] md:w-[70%] lg:w-[40%] flex flex-col items-center justify-evenly p-5 rounded-lg bg-purpleMain text-blackMain shadow-xl">
-                    <input type="text" name="name" id="name" placeholder="Enter Your Name" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none" />
-                    <input type="text" name="email" id="email" placeholder="Enter Your Email" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none" />
-                    <textarea name="message" id="message" placeholder="Enter Your Thoughts" className="w-[80%] h-[20vh] p-2 text-base md:text-lg rounded my-2 font-light outline-none"></textarea>
-                    <input type="submit" name="submit" id="Submit" className="w-[80%] p-2 text-lg rounded my-2 bg-gradient-to-tr from-orangeMain to-yellowMain font-meduim cursor-pointer text-whiteMain hover:shadow-xl" />
+                <form action="post" className="w-[100%] md:w-[70%] lg:w-[40%] flex flex-col items-center justify-evenly p-5 rounded-lg bg-purpleMain text-blackMain shadow-xl" onSubmit={handleSubmit}>
+                    <input type="text" name="name" id="name" placeholder="Enter Your Name" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required />
+                    <input type="text" name="email" id="email" placeholder="Enter Your Email" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required />
+                    <textarea name="message" id="message" placeholder="Enter Your Thoughts" className="w-[80%] h-[20vh] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required></textarea>
+                    <button type="submit" name="submit"  id="Submit" disabled={loading} className={loading ? `w-[80%] p-2 text-lg rounded my-2 bg-blackMain/30 font-meduim cursor-notallowed text-whiteMain` : `w-[80%] p-2 text-lg rounded my-2 bg-gradient-to-tr from-orangeMain to-yellowMain font-meduim cursor-pointer text-whiteMain hover:shadow-xl`}>{loading ? 'Sending...' : 'Send Message'}</button>
+                    
                 </form>
             </div>
         </section>

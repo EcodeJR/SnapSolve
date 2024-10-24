@@ -29,7 +29,7 @@ const Home = () => {
     }, [])
     
     return(
-        <section className="w-full h-fit overflow-x-hidden text-blackMain">
+        <section className="w-full h-fit overflow-x-hidden text-blackMain ">
             <Navigation />
             <div className="w-full h-fit py-5 lg:h-screen flex items-center justify-center flex-col">
                 <div className="relative my-12 py-2 lg:my-0 lg:py-3">

@@ -35,10 +35,10 @@ const SignUpPage = () => {
           Cookies.remove('token', { path: '/', sameSite: 'Strict' });
           Cookies.remove('username', { path: '/', sameSite: 'Strict' });
         }
-        if (localStorage.getItem('token') || localStorage.getItem('username')) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('username');
-        }
+        // if (localStorage.getItem('token') || localStorage.getItem('username')) {
+        //   localStorage.removeItem('token');
+        //   localStorage.removeItem('username');
+        // }
       
         try {
           const response = await axios.post("http://localhost:8080/auth/signup", {
@@ -57,9 +57,9 @@ const SignUpPage = () => {
             // Set cookies and localStorage
             // const isProduction = process.env.REACT_APP_NODE_ENV === 'production';secure: isProduction,secure: isProduction,
             Cookies.set('token', response.data.token, { expires: 3,  sameSite: 'Strict' });
-            localStorage.setItem("token", response.data.token);
+            // localStorage.setItem("token", response.data.token);
             Cookies.set('username', response.data.userName, { expires: 3,  sameSite: 'Strict' });
-            localStorage.setItem("username", response.data.userName);
+            // localStorage.setItem("username", response.data.userName);
       
             // Clear form fields
             setFirstname("");

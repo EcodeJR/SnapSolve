@@ -9,6 +9,7 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const jwt = require('jsonwebtoken'); // For verifying the JWT
 const authenticateOptional = require('../authenticate/authMiddleware');
+const nodemailer = require('nodemailer');
 const secretKey = process.env.JWT_SECRET_KEY || 'your_secret_key';
 
 router.get('/', async (req, res) => {
@@ -203,5 +204,37 @@ router.delete('/delete-history/:messageId', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+router.post('/sendEmail', async (req, res) => {
+    const { name, email, message } = req.body;
+  
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'Please provide all required fields' });
+    }
+  
+    try {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail', // or your email provider
+        auth: {
+          user: process.env.EMAIL_USER, // Your email address
+          pass: process.env.EMAIL_PASS, // Your email password
+        },
+      });
+  
+      const mailOptions = {
+        from: email,
+        to: process.env.EMAIL_USER, // Your email address where you'd like to receive form submissions
+        subject: `Contact Form Submission from ${name}`,
+        text: `You have a new contact form submission from ${name}.\n\nEmail: ${email}\nMessage: ${message}`,
+      };
+  
+      await transporter.sendMail(mailOptions);
+      res.status(200).json({ message: 'Email sent successfully' });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      res.status(500).json({ error: 'Error sending email' });
+    }
+  });
 
 module.exports = router;

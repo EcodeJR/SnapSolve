@@ -2,6 +2,8 @@ import Home from './pages/Home';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import Dashboard from './pages/Dashboard';
+// import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer } from 'react-toastify';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import NotFound from './pages/NotFound';
@@ -14,6 +16,7 @@ function App() {
       <div className='w-[40vw] h-[30vh] md:w-[30vw] md:h-[30vh] lg:w-[20vw] lg:h-[50vh] bg-yellowMain absolute top-[50%] left-[50%] translate-y-[-50%] translate-x-[-50%] rounded-full opacity-40'></div>
     </section>
     <section className='w-full min-h-full backdrop-blur-xl'>
+          {/* <ToastContainer /> */}
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
