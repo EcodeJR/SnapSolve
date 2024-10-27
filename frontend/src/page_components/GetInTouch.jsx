@@ -43,7 +43,7 @@ const GetInTouch = () => {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     };
     return ( 
-        <section className="w-full py-4 px-3 overflow-hidden relative">
+        <section id="contact" className="w-full py-4 px-3 overflow-hidden relative">
             
             <h2 className="font-bold text-4xl md:text-4xl lg:text-6xl text-blackMain font-[Montserrat] text-center uppercase my-5">Get in Touch</h2>
             <div className="flex flex-col lg:flex-row items-center justify-evenly p-5">

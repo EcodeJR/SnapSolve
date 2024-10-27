@@ -49,9 +49,9 @@ const Navigation = () => {
 
     const [smallscreen, Setsmallscreen] = useState(false);
     const Links = [
-        {id: 1, name: 'How it works', value: '#', AniRef : linkAni},
-        {id: 2, name: 'About', value: '#', AniRef : linkAni1},
-        {id: 3, name: 'Contact', value: '#', AniRef : linkAni2}
+        {id: 1, name: 'How it works', value: '#howitworks', AniRef : linkAni},
+        {id: 2, name: 'About', value: '#about', AniRef : linkAni1},
+        {id: 3, name: 'Contact', value: '#contact', AniRef : linkAni2}
     ];
 
     const toggleNav = () => {

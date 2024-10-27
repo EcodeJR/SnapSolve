@@ -1,8 +1,10 @@
 import { IoSend } from "react-icons/io5";
-import { RiMessage3Line } from "react-icons/ri";
 import gem_img from '../assets/gem_icon-nobg.png';
 import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
+import ScrollToTop from "../components/ScrollToTop";
+import Cookies from 'js-cookie';
+import logo from '../assets/snapsolveLogo.png';
 
 const Chat = ({ selectedChat }) => {
     const [inputText, setInputText] = useState('');
@@ -46,7 +48,7 @@ const Chat = ({ selectedChat }) => {
         setConversation((prevConversation) => [...prevConversation, botResponse]);
     
         try {
-            const token = localStorage.getItem('token');
+            const token = Cookies.get('token');
             const headers = {
                 'Content-Type': 'application/json',
             };
@@ -90,27 +92,31 @@ const Chat = ({ selectedChat }) => {
 
     return ( 
         <section className="w-full min-h-[70vh] relative overflow-hidden flex flex-col items-center justify-between">
+            <ScrollToTop />
             <section className="w-full h-full flex flex-col items-center justify-center">
                 { conversation.length === 0 ? ( 
-                        <div className="h-full w-full flex flex-col items-center justify-center">
-                            <RiMessage3Line className="text-7xl md:text-8xl font-bold" />
-                            <h1 className="text-xl font-bold">Enter chat..</h1>
+                        <div className="h-[50vh] w-full flex flex-col items-center justify-center p-5">
+                            <img src={logo} alt="Snapsolves's Logo." draggable="true" className='w-[40px] md:w-[100px] lg:w-[200px]' />
+                            <h1 className="text-xl font-bold text-center">Got a tricky question or equation?</h1>
                         </div> 
                     )
                 :
                     conversation.map((msg, index) => (
                         <div className="w-full md:w-[80%] mx-auto h-full p-5" key={index}>
                             <div className="w-full h-fit flex flex-col items-start justify-start my-5">
-                                <div className="flex items-center justify-center">
-                                    <img src={gem_img} alt="Gemini Logo" className="w-10" />
-                                    {msg.message && <div className="p-2 rounded-md"><p className="text-base">{msg.message}</p></div>}
+                                <div className="w-full flex items-center justify-end">
+                                    {msg.message && <div className="w-fit flex"><p className="text-lg p-2 rounded-md bg-greenMain/30">{msg.message}</p></div>}
                                 </div>
-                                
+                                <div className="flex items-start justify-start">
+                                    <img src={gem_img} alt="Gemini Logo" className="w-10" />
                                 {
                                     msg.botResponse === "" 
-                                    ? <p className="text-lg m-2">Generating......</p> 
-                                    : <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.botResponse }}></div>
+                                    ?  <p className="text-lg m-2">Generating......</p>
+                                    :  <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.botResponse }}></div>
                                 }
+                                </div>
+                                
+                                
                             </div>
                         </div>
                     ))

@@ -5,7 +5,7 @@ import gem_text from "../assets/gem_text2-nobg.png";
 import { NavLink } from "react-router-dom";
 const ThingsToKnow = () => {
     return ( 
-        <section className="py-4 px-2 text-center overflow-hidden">
+        <section id="about" className="py-4 px-2 text-center overflow-hidden">
             <h2 className="font-bold text-4xl md:text-4xl lg:text-6xl text-blackMain font-[Montserrat] text-center uppercase my-5">Things to know</h2>
             {/**/}
             <div className="flex flex-col items-center justify-center">
@@ -18,9 +18,9 @@ const ThingsToKnow = () => {
                     </div>
                     <div className="flex flex-col items-start justify-between mx-5 md:mx-10">
                         {/* <hr className="w-100 h-1 bg-purpleMain rotate-90 m-0" /> */}
-                        <h2 className="font-extrabold text-2xl md:text-3xl lg:text-4xl">BIG TEXT</h2>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase">Image Recognition</h2>
                         <div className="px-2 mt-7">
-                            <p className="text-justify text-base w-full">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ducimus est repellendus perferendis fuga esse recusandae distinctio accusantium voluptas amet officia, labore quas quae saepe ex libero corporis fugiat id hic?</p>
+                            <p className="text-justify text-base w-full">SnapSolve’s advanced image recognition captures any image with precision, allowing you to instantly convert visual data into workable text for seamless problem-solving.</p>
                         </div>
                     </div>
                 </div>
@@ -33,9 +33,9 @@ const ThingsToKnow = () => {
                     </div>
                     <div className="flex flex-col items-start justify-between mx-5 md:mx-10">
                         {/* <hr className="w-100 h-1 bg-purpleMain rotate-90 m-0" /> */}
-                        <h2 className="font-extrabold text-2xl md:text-3xl lg:text-4xl">BIG TEXT</h2>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase">Text Recognition</h2>
                         <div className="px-2 mt-7">
-                            <p className="text-justify text-base w-full">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ducimus est repellendus perferendis fuga esse recusandae distinctio accusantium voluptas amet officia, labore quas quae saepe ex libero corporis fugiat id hic?</p>
+                            <p className="text-justify text-base w-full">Simply upload any document or note, and SnapSolve extracts the text instantly. Plus, you can chat with the AI for additional clarification!</p>
                         </div>
                     </div>
                 </div>
@@ -48,9 +48,9 @@ const ThingsToKnow = () => {
                     </div>
                     <div className="flex flex-col items-start justify-between mx-5 md:mx-10">
                         {/* <hr className="w-100 h-1 bg-purpleMain rotate-90 m-0" /> */}
-                        <h2 className="font-extrabold text-2xl md:text-3xl lg:text-4xl">BIG TEXT</h2>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase">Text Generation</h2>
                         <div className="px-2 mt-7">
-                            <p className="text-justify text-base w-full">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ducimus est repellendus perferendis fuga esse recusandae distinctio accusantium voluptas amet officia, labore quas quae saepe ex libero corporis fugiat id hic?</p>
+                            <p className="text-justify text-base w-full">Have a question or need clarity on complex concepts? SnapSolve’s AI can generate clear explanations and answers tailored to your queries in seconds.</p>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,7 @@ const ThingsToKnow = () => {
                     <h3 className="text-4xl md:text-6xl text-left font-normal mb-3 z-20">Supercharge Your <br /> Creativity & Productivity.</h3>
                 </div>
                 <div className="flex items-center justify-between mt-6">
-                    <p className="text-left text-sm md:text-base font-light text-whiteMain/90">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+                    <p className="text-left text-sm md:text-base font-light text-whiteMain/90">Unlock your potential—get inspired, solutions, create faster, and accomplish more with a tool that turns big ideas into reality, effortlessly!</p>
                     <span className="flex items-center justify-center">
                         <NavLink to="dashboard" className="font-light text-xl md:text-2xl">Try Now</NavLink>
                         <HiOutlineArrowNarrowRight className="text-2xl font-light mx-4" />

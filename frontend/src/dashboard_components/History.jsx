@@ -79,7 +79,7 @@ const History = ({ onSelectChat }) => {
     };
 
     let delHistory = 
-        <div className={deleteHistory ? `absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] rounded-xl bg-whiteMain flex flex-col items-center justify-center p-5 w-[80%] md:w-[30%] h-[40%] md:h-[30%] shadow-xl` : `fixed -left-[100%]`}>
+        <div className={deleteHistory ? `absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-50 rounded-xl bg-whiteMain flex flex-col items-center justify-center p-5 w-[80%] md:w-[30%] h-[40%] md:h-[30%] shadow-xl` : `fixed -left-[100%]`}>
             <CiWarning className='text-4xl text-redMain font-bold animate-pulse' />
             <h2 className='py-4 font-bold text-2xl text-blackMain'>Do you wish to delete!</h2>
             <div className='w-full flex items-center justify-evenly'>
@@ -105,20 +105,22 @@ const History = ({ onSelectChat }) => {
                             {chatHistory.map((message,  index) => (
                                 <li 
                                     key={index} 
-                                    className="text-sm md:text-lg text-center bg-yellowMain/10 rounded-md my-2 mx-auto cursor-pointer w-[90%] p-2 flex items-center justify-between overflow-hidden"
+                                    className="text-sm md:text-lg text-center bg-greenMain/30 rounded-md my-2 mx-auto cursor-pointer w-[90%] p-2 flex items-center justify-between overflow-hidden relative"
                                     onClick={() => onSelectChat({ message: message.message, botResponse: message.botResponse })}
                                 >
                                     <p className='w-fit'>
                                        {message.message} 
                                     </p>
-                                    
-                                    <CiTrash 
-                                        className='text-xl font-bold text-redMain hover:animate-pulse' 
+                                    <div className='absolute top-[50%] translate-y-[-50%] right-2 bg-whiteMain rounded-full p-1'>
+                                        <CiTrash 
+                                        className='text-2xl font-bold text-redMain hover:animate-pulse' 
                                         onClick={(e) => {
                                             e.stopPropagation(); // Prevent triggering chat selection when deleting
                                             toggleDeleteHistory(message._id);
                                         }}  
                                     />
+                                    </div>
+                                    
                                 </li>
                             ))}
                         </ul>

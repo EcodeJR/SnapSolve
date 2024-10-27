@@ -11,7 +11,7 @@ import { SiTeamspeak } from "react-icons/si";
 import { NavLink } from "react-router-dom";
 const HowItWorks = () => {
     return ( 
-    <section className='w-full h-fit p-3'>
+    <section id="howitworks" className='w-full h-fit p-3'>
         <h2 className='font-bold text-4xl md:text-4xl lg:text-6xl text-blackMain font-[Montserrat] text-center uppercase my-5'>How It Works</h2>
 
         <div className='w-full grid grid-cols-1 md:grid-cols-3 place-items-center gap-5 py-4'>

@@ -131,10 +131,10 @@ const SignUpPage = () => {
                     </form>
                     {status == 200 ? <p className='text-base font-bold text-greenMain mt-3'>{message}</p> : <p className='text-base font-bold text-redMain mt-3'>{message}</p>}
                     <div className='flex items-center justify-center mt-7'>
-                        <FaFacebook className='text-2xl cursor-pointer text-blackMain/80 mx-2' />
-                        <FaSquareWhatsapp className='text-2xl cursor-pointer text-blackMain/80 mx-2' />
-                        <FaSquareXTwitter className='text-2xl cursor-pointer text-blackMain/80 mx-2' />
-                        <FaLinkedin className='text-2xl cursor-pointer text-blackMain/80 mx-2' />
+                    <a href="https://www.facebook.com/emmanuel.dalyop.96/" target="_blank"><FaFacebook className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
+                      <a href="https://wa.me/+23451242451" target="_blank"><FaSquareWhatsapp className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
+                      <a href="https://x.com/EcodeJR" target="_blank"><FaSquareXTwitter className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
+                      <a href="https://www.linkedin.com/in/emmanuel-dalyop-5b6a1b178/" target="_blank"><FaLinkedin className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
                     </div>
                 </div>
                 

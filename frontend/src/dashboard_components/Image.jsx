@@ -2,6 +2,7 @@ import Drag_Drop from '../components/Drag_Drop';
 import logo from '../assets/snapsolveLogo.png';
 import gem_img from '../assets/gem_icon-nobg.png';
 import { useState } from "react";
+import Cookies from 'js-cookie';
 
 const Image = () => {
     const [conversation, setConversation] = useState([]); // Array to store the conversation history
@@ -16,7 +17,7 @@ const Image = () => {
     setConversation((prevConversation) => [...prevConversation, userMessage, botResponse]);
 
     try {
-        const token = localStorage.getItem('token');
+        const token = Cookies.get('token');
         const headers = {};
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;

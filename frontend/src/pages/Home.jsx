@@ -37,9 +37,9 @@ const Home = () => {
                     <p className="font-bold text-xs lg:text-base bg-orangeMain rounded-full px-2 py-2 absolute -bottom-10 left-5 lg:-bottom-20 lg:left-10 text-whiteMain w-28 text-center rotate-12">LEARNING</p>
                     <p className="font-bold text-xs lg:text-base bg-petchMain rounded-full px-2 py-2 absolute -top-10 left-10 lg:-top-20 lg:left-10 text-whiteMain w-28 text-center -rotate-12">AUTOMATE</p>
                     <p className="font-bold text-xs lg:text-base bg-blueMain rounded-full px-2 py-2 absolute -bottom-10 right-5 lg:-bottom-20 lg:right-10 text-whiteMain w-28 text-center -rotate-12">GROWTH</p>
-                    <h1 className="font-bold text-4xl md:text-6xl lg:text-8xl font-[Montserrat] text-center" ref={heroText}>GET AI <span className="text-petchMain">SOLUTIONS</span> TO YOUR <span className="text-purpleMain">PROBLEMS</span></h1>
+                    <h1 className="font-bold text-4xl md:text-5xl lg:text-7xl font-[Montserrat] text-center uppercase" ref={heroText}>Get Instant AI-Powered <span className="text-petchMain">Solutions</span> to All Your <span className="text-purpleMain">Challenges!</span></h1>
                 </div>
-                <p className="font-medium text-base md:text-lg lg:text-xl text-blackMain/85 font-[Montserrat Alternates] text-center mt-10 lg:mt-0 lg:my-5">Learn and get solutions fast with snapsolve AI, <br /> and focus on other important problems.</p>
+                <p className="font-medium text-base md:text-lg lg:text-xl text-blackMain/85 font-[Montserrat Alternates] text-center mt-10 lg:mt-0 lg:my-5">SnapSolve AI lets you learn fast and find solutions in a snap, <br /> freeing you up to tackle what matters most!</p>
                 <NavLink to="/dashboard" className="text-xl font-semibold my-2 py-3 px-10 hover:shadow-2xl bg-purpleMain text-whiteMain rounded flex items-center justify-center uppercase">Try For Free</NavLink>
             </div>
             <HowItWorks />

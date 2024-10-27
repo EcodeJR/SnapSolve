@@ -8,6 +8,7 @@ import { MdSunny } from "react-icons/md";
 import { RiMenuFold4Line } from "react-icons/ri";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import Cookies from 'js-cookie';
+import ScrollToTop from "../components/ScrollToTop";
 
 const Dashboard = () => {
     const [darkMode, setDarkMode] = useState(false);
@@ -51,6 +52,7 @@ const Dashboard = () => {
                 : `bg-whiteMain text-blackMain h-screen fixed top-0 left-0 overflow-hidden w-full flex`
             }
         >
+            <ScrollToTop />
             <div className={`w-full lg:w-[30vw] h-screen p-5 overflow-y-scroll 
                 ${showHistory ? 'block fixed top-0 left-0 z-50' : 'hidden'} lg:block 
                 ${darkMode ? `bg-blackMain text-whiteMain` : `bg-whiteMain text-blackMain`}`}>
@@ -116,6 +118,8 @@ const Dashboard = () => {
                         : <Image />
                     }
                 </div>
+                <div className="w-full p-1 flex items-center justify-center"><p className="text-base text-center">For Enquiries or Complaints. Contact us <Link to="/#contact" className="text-greenMain underline">HERE</Link></p></div>
+                
             </div>
         </section>
     );
