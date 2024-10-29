@@ -6,7 +6,7 @@ function BackToTopButton() {
 
   // Handle scroll events
   const handleScroll = () => {
-    if (window.scrollY > 500) {
+    if (window.scrollY > 100) {
       setIsVisible(true);
     } else {
       setIsVisible(false);
@@ -33,7 +33,7 @@ function BackToTopButton() {
   return (
     <>
       {isVisible && (
-        <button className="fixed z-80 bottom-10 lg:bottom-2 right-5 p-5 lg:p-4 rounded-full shadow-lg animate-bounce bg-blueMain" onClick={scrollToTop}>
+        <button className="fixed z-50 bottom-10 lg:bottom-2 right-5 p-5 lg:p-4 rounded-full shadow-lg animate-bounce bg-blueMain" onClick={scrollToTop}>
           <BsArrowDown className='font-bold text-whiteMain text-2xl text-secondary' />
         </button>
       )}

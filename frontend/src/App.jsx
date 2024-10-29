@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import NotFound from './pages/NotFound';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Rules from './pages/Rules';
 // import { AuthProvider } from './components/AuthContext';
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
               <Route path="/signin" element={<SignInPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/privacy_policy" element={<PrivacyPolicy />} />
+              <Route path="/rules" element={<Rules />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

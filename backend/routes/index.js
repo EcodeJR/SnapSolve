@@ -20,14 +20,6 @@ router.get('/', async (req, res) => {
     res.json(documents);
 });
 
-router.post('/add', async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('Snapsolve');
-    
-    const result = await collection.insertOne({ name: req.body.name, type: req.body.type });
-    res.json({ insertedId: result.insertedId });
-});
-
 // Apply middleware to the /chat route
 router.post('/chat', authenticateOptional, async (req, res) => {
     const userId = req.userId; // This will be undefined if the user is not authenticated
@@ -72,7 +64,7 @@ router.post('/chat', authenticateOptional, async (req, res) => {
     } catch (error) {
         console.error('Error in /chat route:', error);
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ error: 'Internal Server Error. Try Again' });
         }
     }
 });
@@ -122,7 +114,7 @@ router.post('/image', authenticateOptional, upload.single('image'), async (req, 
     } catch (error) {
         console.error('Error in /image route:', error);
         if (!res.headersSent) {
-            res.status(500).json({ error: 'Error processing image' });
+            res.status(500).json({ error: 'Error processing image. Try Again' });
         }
     }
 });
@@ -159,7 +151,7 @@ router.get('/chat-history', async (req, res) => {
         res.json(chat.messages);
     } catch (error) {
         console.log('Error retrieving chat history:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error, Login Again.' });
     }
 });
 
@@ -201,7 +193,7 @@ router.delete('/delete-history/:messageId', async (req, res) => {
         res.json({ message: 'Chat message deleted successfully' });
     } catch (error) {
         console.log('Error deleting chat message:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error. Try Again' });
     }
 });
 
@@ -233,7 +225,7 @@ router.post('/sendEmail', async (req, res) => {
       res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
       console.error('Error sending email:', error);
-      res.status(500).json({ error: 'Error sending email' });
+      res.status(500).json({ error: 'Error sending email. Try Again' });
     }
   });
 

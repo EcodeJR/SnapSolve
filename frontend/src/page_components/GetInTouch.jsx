@@ -56,19 +56,19 @@ const GetInTouch = () => {
                     <a href="tel:+2347051242451" className="text-base md:text-lg font-bold text-blackMain/80 uppercase hover:text-purpleMain flex items-center justify-between"><TbPhoneOutgoing className="text-3xl mx-2" /> +2347051242451</a>
                 </div>
                 <form action="post" className="w-[100%] md:w-[70%] lg:w-[40%] flex flex-col items-center justify-evenly p-5 rounded-lg bg-purpleMain text-blackMain shadow-xl" onSubmit={handleSubmit}>
-                    <input type="text" name="name" id="name" placeholder="Enter Your Name" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
+                    <input type="text" name="name" id="name" placeholder="Name" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
                     value={formData.name}
                     onChange={handleChange}
                     required />
-                    <input type="text" name="email" id="email" placeholder="Enter Your Email" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
+                    <input type="text" name="email" id="email" placeholder="Email" className="w-[80%] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
                     value={formData.email}
                     onChange={handleChange}
                     required />
-                    <textarea name="message" id="message" placeholder="Enter Your Thoughts" className="w-[80%] h-[20vh] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
+                    <textarea name="message" id="message" placeholder="Message...." className="w-[80%] h-[20vh] p-2 text-base md:text-lg rounded my-2 font-light outline-none"
                     value={formData.message}
                     onChange={handleChange}
                     required></textarea>
-                    <button type="submit" name="submit"  id="Submit" disabled={loading} className={loading ? `w-[80%] p-2 text-lg rounded my-2 bg-blackMain/30 font-meduim cursor-notallowed text-whiteMain` : `w-[80%] p-2 text-lg rounded my-2 bg-gradient-to-tr from-orangeMain to-yellowMain font-meduim cursor-pointer text-whiteMain hover:shadow-xl`}>{loading ? 'Sending...' : 'Send Message'}</button>
+                    <button type="submit" name="submit"  id="Submit" disabled={loading} className={loading ? `w-[80%] p-2 text-lg rounded my-2 bg-blackMain/30 font-meduim cursor-notallowed text-whiteMain` : `w-[80%] p-2 text-lg rounded my-2 bg-gradient-to-tr from-orangeMain to-yellowMain font-meduim cursor-pointer text-whiteMain hover:shadow-xl`}>{loading ? <div className='w-full h-fit flex items-center justify-center text-xl py-10'><span className="w-[30px] h-[30px] rounded-full bg-transparent border-[2px] border-blueMain border-dashed animate-spin duration-75 mx-2"></span>Sending</div> : 'Send Message'}</button>
                     
                 </form>
             </div>

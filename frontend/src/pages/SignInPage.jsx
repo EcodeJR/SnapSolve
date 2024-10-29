@@ -102,7 +102,7 @@ const SignInPage = () => {
                             className='w-full h-full p-3 text-base rounded-md outline-none' required />
                                 {viewpwd ? <GoEyeClosed onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' /> : <GoEye onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' />}
                 </div>
-                        <input type="submit" value={loading ? "Loading..." : "Submit"} disabled={loading} className={`w-[90%] lg:w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain cursor-pointer'} text-whiteMain rounded-md hover:shadow-2xl outline-none`} />
+                        <button type="submit" disabled={loading} className={`w-[90%] lg:w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain cursor-pointer'} text-whiteMain rounded-md hover:shadow-2xl outline-none`}>{loading ? <div className='w-full h-fit flex items-center justify-center text-xl'><span className="w-[30px] h-[30px] rounded-full bg-transparent border-[2px] border-whiteMain border-dashed animate-spin duration-75 mx-2"></span>Loading</div>  : <div className='w-full h-fit flex items-center justify-center text-lg uppercase font-semibold'>Sign in</div>}</button>
                     </form>
                     {status == 200 ? <p className='text-base font-bold text-greenMain mt-3'>{message}</p> : <p className='text-base font-bold text-redMain mt-3'>{message}</p>}
                     

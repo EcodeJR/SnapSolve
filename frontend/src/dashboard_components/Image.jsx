@@ -6,70 +6,78 @@ import Cookies from 'js-cookie';
 
 const Image = () => {
     const [conversation, setConversation] = useState([]); // Array to store the conversation history
+    const [loading, setLoading] = useState(false);
+
 
    // Function to handle sending image to backend and updating conversation
-   const handleSendImage = async (imgArray) => {
-    if (imgArray.length === 0) return;
+    const handleSendImage = async (imgArray) => {
+        if (imgArray.length === 0) return;
 
-    const userMessage = { message: "Image sent" };
-    const botResponse = { botResponse: "" };
-    
-    setConversation((prevConversation) => [...prevConversation, userMessage, botResponse]);
+        const userMessage = { message: "Image sent", botResponse: "" };
+        setConversation((prevConversation) => [...prevConversation, userMessage]);
+        setLoading(true); // Set loading to true to show "Generating..."
 
-    try {
-        const token = Cookies.get('token');
-        const headers = {};
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
+        try {
+            const token = Cookies.get('token');
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
 
-        const formData = new FormData();
-        formData.append('image', imgArray[0]); 
+            const formData = new FormData();
+            formData.append('image', imgArray[0]);
 
-        const res = await fetch('http://localhost:8080/main/image', {
-            method: 'POST',
-            headers,
-            body: formData,
-        });
-
-        if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || 'Failed to upload image');
-        }
-
-        const data = await res.json();
-        let msg = data.botResponse;
-
-        const formatText = () => {
-            if (!msg) return ''; 
-
-            let formattedText = msg;
-            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            formattedText = formattedText.replace(/^\* (.*?)(\n|$)/gm, '<li>$1</li>');
-            formattedText = formattedText.replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>');
-            formattedText = formattedText.replace(/\n/g, '<br />');
-            formattedText = formattedText.replace(/```(.*?)```/gs, (match, code) => {
-                const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
-                    .replace(/\n/g, '<br>').replace(/\s/g, '&nbsp;');
-                return `<pre><code>${escapedCode}</code></pre>`;
+            const res = await fetch('http://localhost:8080/main/image', {
+                method: 'POST',
+                headers,
+                body: formData,
             });
 
-            return formattedText;
-        };
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'Failed to upload image');
+            }
 
-        setConversation((prevConversation) => {
-            const updatedConversation = [...prevConversation];
-            updatedConversation[updatedConversation.length - 1] = { botResponse: formatText() };
-            return updatedConversation;
-        });
+            const data = await res.json();
+            const msg = data.botResponse;
 
-    } catch (error) {
-        console.error('Error:', error);
-        const errorMessage = { message: 'Error communicating with server' };
-        setConversation((prevConversation) => [...prevConversation, errorMessage]);
-    }
-};
+            // Format the bot's response text
+            const formatText = () => {
+                if (!msg) return '';
+
+                let formattedText = msg;
+                formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                formattedText = formattedText.replace(/^\* (.*?)(\n|$)/gm, '<li>$1</li>');
+                formattedText = formattedText.replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>');
+                formattedText = formattedText.replace(/\n/g, '<br />');
+                formattedText = formattedText.replace(/```(.*?)```/gs, (match, code) => {
+                    const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+                        .replace(/\n/g, '<br>').replace(/\s/g, '&nbsp;');
+                    return `<pre><code>${escapedCode}</code></pre>`;
+                });
+
+                return formattedText;
+            };
+
+            // Update bot's response and reset loading
+            setConversation((prevConversation) => {
+                const updatedConversation = [...prevConversation];
+                updatedConversation[updatedConversation.length - 1] = {
+                    ...updatedConversation[updatedConversation.length - 1],
+                    botResponse: formatText(),
+                };
+                return updatedConversation;
+            });
+            setLoading(false); // Reset loading after response
+        } catch (error) {
+            console.error('Error:', error);
+            const errorMessage = { message: 'Error communicating with server' };
+            setConversation((prevConversation) => [...prevConversation, errorMessage]);
+            setLoading(false);
+        }
+    };
+
 
 
   return ( 
@@ -85,16 +93,20 @@ const Image = () => {
             :
                 ( conversation.map((msg, index) => (
                         <div className="w-full md:w-[80%] mx-auto h-full p-5" key={index}>
-                            {/* <div className="w-full h-fit flex items-center justify-end my-4">
-                                <pre className="text-lg md:text-xl">{msg.sender === 'user' ? 'You' : 'AI'}</pre>
-                            </div> */}
-                            <div className="w-full h-fit flex items-start justify-start my-5">
-                                <img src={gem_img} alt="Gemini Logo" className="w-10" />
-                                {msg.message === "" ? null : <div className="p-2 rounded-md"><p className="text-base">{msg.message}</p></div>}
-                                    {
-                                        msg.botResponse === "" ? <p className="text-lg m-2">Generating......</p> : <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.botResponse }}>
-                                    </div>
-                                }
+                            <div className="w-full h-fit flex flex-col items-start justify-start my-5">
+                                
+                            <div className="w-full flex items-center justify-end">
+                                    {msg.message && <div className="w-fit flex"><p className="text-lg p-2 rounded-md bg-greenMain/30">{msg.message}</p></div>}
+                                </div>
+                                    
+                                <div className="flex items-start justify-start">
+                                    <img src={gem_img} alt="Gemini Logo" className="w-10" />
+                                    {loading && msg.botResponse === "" ? (
+                                        <div className='w-full h-fit flex items-center justify-center text-xl'><span className="w-[30px] h-[30px] rounded-full bg-transparent border-[2px] border-blueMain border-dashed animate-spin duration-75 mx-2"></span>Generating</div>
+                                    ) : (
+                                        <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.botResponse }}></div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))

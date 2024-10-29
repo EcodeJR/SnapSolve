@@ -48,8 +48,8 @@ const Dashboard = () => {
     return (
         <section
             className={darkMode
-                ? `bg-blackMain text-whiteMain h-screen fixed top-0 left-0 overflow-hidden w-full flex`
-                : `bg-whiteMain text-blackMain h-screen fixed top-0 left-0 overflow-hidden w-full flex`
+                ? `bg-blackMain text-whiteMain h-screen overflow-hidden w-full flex`
+                : `bg-whiteMain text-blackMain h-screen overflow-hidden w-full flex`
             }
         >
             <ScrollToTop />

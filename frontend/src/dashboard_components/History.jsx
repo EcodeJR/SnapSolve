@@ -89,20 +89,24 @@ const History = ({ onSelectChat }) => {
         </div>;
 
     return ( 
-        <div className="flex flex-col items-center justify-start w-full h-full">
+        <div className="flex flex-col items-center justify-start w-full h-fit scrollbar scrollbar-thumb-greenMain scrollbar-track-greenMain/10">
             {delHistory}
             <div className="flex flex-col items-center justify-start my-5 w-full">
                 <Link to='/' className='text-3xl md:text-4xl lg:text-5xl my-3 font-bold text-center'>SnapSolve</Link>
                 <h4 className="text-center text-xl md:text-2xl lg:text-3xl">Chat History</h4>
                 <div className="flex flex-col items-center justify-center w-full p-3">
-                    {loading ? <div>Loading</div> 
+                    {loading ? <div className='w-full h-fit flex items-center justify-center text-xl py-10'><span className="w-[30px] h-[30px] rounded-full bg-transparent border-[2px] border-blueMain border-dashed animate-spin duration-75 mx-2"></span>Loading</div> 
                     : error ? (
                         <div className="flex flex-col items-center justify-center text-center text-redMain text-lg">
                             <p>{error}</p>
                         </div>
                     ) : chatHistory.length > 0 ? (
                         <ul className="w-full">
-                            {chatHistory.map((message,  index) => (
+                            <marquee direction="left">Refresh page to get History Updated.</marquee>
+                            {chatHistory
+                            .slice()
+                            .reverse()
+                            .map((message,  index) => (
                                 <li 
                                     key={index} 
                                     className="text-sm md:text-lg text-center bg-greenMain/30 rounded-md my-2 mx-auto cursor-pointer w-[90%] p-2 flex items-center justify-between overflow-hidden relative"

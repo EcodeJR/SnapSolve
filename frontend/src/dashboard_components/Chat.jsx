@@ -2,13 +2,13 @@ import { IoSend } from "react-icons/io5";
 import gem_img from '../assets/gem_icon-nobg.png';
 import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
-import ScrollToTop from "../components/ScrollToTop";
 import Cookies from 'js-cookie';
 import logo from '../assets/snapsolveLogo.png';
 
 const Chat = ({ selectedChat }) => {
     const [inputText, setInputText] = useState('');
     const [conversation, setConversation] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Function to format text
     const formatText = (msg) => {
@@ -40,13 +40,11 @@ const Chat = ({ selectedChat }) => {
     // Function to handle sending new text (not related to history)
     const handleSendText = async () => {
         if (!inputText.trim()) return;
-    
-        const newMessage = { message: inputText };
+
+        const newMessage = { message: inputText, botResponse: "" };
         setConversation((prevConversation) => [...prevConversation, newMessage]);
-    
-        const botResponse = { botResponse: "" };
-        setConversation((prevConversation) => [...prevConversation, botResponse]);
-    
+        setLoading(true); // Sets loading to true to show "Generating..."
+
         try {
             const token = Cookies.get('token');
             const headers = {
@@ -55,44 +53,51 @@ const Chat = ({ selectedChat }) => {
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
-    
+
             const res = await fetch('http://localhost:8080/main/chat', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ message: inputText }),
             });
-    
+
             if (!res.ok) {
                 const errData = await res.json();
                 throw new Error(errData.error || 'Failed to send message');
             }
-    
+
             const data = await res.json();
-            let msg = data.botResponse;
-    
-            // Format the bot's response
+            const msg = data.botResponse;
+
+            // Updates the bot's response and set loading to false
             setConversation((prevConversation) => {
                 const updatedConversation = [...prevConversation];
-                updatedConversation[updatedConversation.length - 1] = { botResponse: formatText(msg) };
+                updatedConversation[updatedConversation.length - 1] = {
+                    ...updatedConversation[updatedConversation.length - 1],
+                    botResponse: formatText(msg),
+                };
                 return updatedConversation;
             });
+            setLoading(false); // Resets loading after response
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = { message: 'Error communicating with server' };
             setConversation((prevConversation) => [...prevConversation, errorMessage]);
+            setLoading(false);
         }
         setInputText('');
     };
+
+    
     
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             handleSendText();
         }
     };
+    
 
     return ( 
         <section className="w-full min-h-[70vh] relative overflow-hidden flex flex-col items-center justify-between">
-            <ScrollToTop />
             <section className="w-full h-full flex flex-col items-center justify-center">
                 { conversation.length === 0 ? ( 
                         <div className="h-[50vh] w-full flex flex-col items-center justify-center p-5">
@@ -109,14 +114,12 @@ const Chat = ({ selectedChat }) => {
                                 </div>
                                 <div className="flex items-start justify-start">
                                     <img src={gem_img} alt="Gemini Logo" className="w-10" />
-                                {
-                                    msg.botResponse === "" 
-                                    ?  <p className="text-lg m-2">Generating......</p>
-                                    :  <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.botResponse }}></div>
-                                }
+                                    {loading && msg.botResponse === "" ? (
+                                        <div className='w-full h-fit flex items-center justify-center text-xl'><span className="w-[30px] h-[30px] rounded-full bg-transparent border-[2px] border-blueMain border-dashed animate-spin duration-75 mx-2"></span>Generating</div>
+                                    ) : (
+                                        <div className="text-lg m-2" dangerouslySetInnerHTML={{ __html: msg.botResponse }}></div>
+                                    )}
                                 </div>
-                                
-                                
                             </div>
                         </div>
                     ))
