@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 import logo from '../assets/snapsolveLogo.png';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const Chat = ({ selectedChat }) => {
     const [inputText, setInputText] = useState('');
@@ -14,6 +16,20 @@ const Chat = ({ selectedChat }) => {
     const formatText = (msg) => {
         // Convert bolded text
         let formattedText = msg.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        // Handle inline LaTeX expressions
+                formattedText = formattedText.replace(/\$\$(.*?)\$\$/g, (match, math) => {
+                    try {
+                        // Render LaTeX using KaTeX
+                        return katex.renderToString(math, {
+                            throwOnError: false,
+                            displayMode: false,
+                        });
+                    } catch (error) {
+                        console.error("Error rendering LaTeX:", error);
+                        return match;
+                    }
+                });
         // Convert list items (using regular expressions for markdown-like syntax)
         formattedText = formattedText.replace(/^\* (.*?)(\n|$)/gm, '<li>$1</li>');
         // Wrap <ul> around all <li> elements
@@ -101,7 +117,7 @@ const Chat = ({ selectedChat }) => {
             <section className="w-full h-full flex flex-col items-center justify-center">
                 { conversation.length === 0 ? ( 
                         <div className="h-[50vh] w-full flex flex-col items-center justify-center p-5">
-                            <img src={logo} alt="Snapsolves's Logo." draggable="true" className='w-[40px] md:w-[100px] lg:w-[200px]' />
+                            <img src={logo} alt="Snapsolves's Logo." draggable="true" className='w-[100px] md:w-[150px] lg:w-[200px]' />
                             <h1 className="text-xl font-bold text-center">Got a tricky question or equation?</h1>
                         </div> 
                     )

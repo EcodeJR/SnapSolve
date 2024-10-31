@@ -18,8 +18,8 @@ const authenticateOptional = (req, res, next) => {
         req.userId = decoded.userId; // Attach userId to the request object for authenticated users
         next();
     } catch (err) {
-        console.error('JWT Verification Error:', err.message);
-        // Proceed without userId if token is invalid or expired
+        // console.error('JWT Verification Error:', err.message);
+        // Proceeding without userId if token is invalid or expired
         req.userId = null;
         return next();  // Let users with invalid tokens interact without saving
     }

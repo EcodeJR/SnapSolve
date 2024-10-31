@@ -1,4 +1,3 @@
-// app.js
 require('dotenv').config();
 const express = require('express');
 const indexRoutes = require('./routes/index');
@@ -11,8 +10,8 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Use CORS middleware to allow requests from specific origins
-const allowedOrigins = ['http://localhost:5173', 'https://2kh17n9g-5173.uks1.devtunnels.ms/'];
+// Using CORS middleware to allow requests from specific origins
+const allowedOrigins = ['http://localhost:5173'];
 
 app.use(cors({
   origin: allowedOrigins, // List of allowed origins
@@ -23,7 +22,7 @@ app.use(cors({
 // Middleware to parse cookies
 app.use(cookieParser());
 
-// Use the routes
+// Using the routes
 app.use('/main', indexRoutes);
 app.use('/auth', authRoutes);
 

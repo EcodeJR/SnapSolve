@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
         <section className="w-full min-h-screen">
             <Navigation />
             <div className='w-full h-full p-6'>
-                <h2 className="font-bold text-3xl md:text-5xl lg:text-7xl uppercase font-[Montserrat]">Privacy <br /> Policies</h2>
+                <h2 className="font-bold text-3xl md:text-5xl lg:text-7xl uppercase font-[Montserrat] tracking-wider">Privacy <br /> Policies</h2>
                 {/* <p className='text-base italic opacity-40'>Effective Date: 01/11/2024</p> */}
                 <p className='text-lg my-3 w-full md:w-[70%] text-justify'>At SnapSolve, we are committed to protecting your privacy and ensuring the security of your information. This Privacy Policy outlines how we collect, use, and protect the data you provide when using SnapSolve, including the uploading of images for AI-driven problem-solving.</p>
                 <div>

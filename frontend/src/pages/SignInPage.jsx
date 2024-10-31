@@ -30,11 +30,7 @@ const SignInPage = () => {
           Cookies.remove('token', { path: '/', secure: true, sameSite: 'Strict' });
           Cookies.remove('username', { path: '/', secure: true, sameSite: 'Strict' });
         }
-      
-        // if (localStorage.getItem('token') || localStorage.getItem('username')) {
-        //   localStorage.removeItem('token');
-        //   localStorage.removeItem('username');
-        // }
+    
 
         try {
           const response = await axios.post("http://localhost:8080/auth/signin", {
@@ -42,12 +38,8 @@ const SignInPage = () => {
             password,
           });
           if (response.data.token) {
-            // console.log(response.data)
             Cookies.set('token', response.data.token, { expires: 3 });
-            // localStorage.setItem("token", response.data.token); // Save token for future use
-            // console.log(response);
             Cookies.set('username', response.data.userName, { expires: 3 });
-            // localStorage.setItem("username", response.data.userName);
             setStatus(response.status);
             setMessage("Sign In Successful!");
             setEmail("");

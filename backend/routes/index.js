@@ -14,15 +14,15 @@ const secretKey = process.env.JWT_SECRET_KEY || 'your_secret_key';
 
 router.get('/', async (req, res) => {
     const db = await connectToDatabase();
-    const collection = db.collection('Snapsolve'); // Replace 'myCollection' with your collection name
+    const collection = db.collection('Snapsolve');
     
     const documents = await collection.find({}).toArray();
     res.json(documents);
 });
 
-// Apply middleware to the /chat route
+// Applying middleware to the /chat route
 router.post('/chat', authenticateOptional, async (req, res) => {
-    const userId = req.userId; // This will be undefined if the user is not authenticated
+    const userId = req.userId;
     const { message } = req.body;
 
     if (!message) {
@@ -56,13 +56,12 @@ router.post('/chat', authenticateOptional, async (req, res) => {
         await chatCollection.updateOne(
             { userId },
             { $push: { messages: newMessage } },
-            { upsert: true }  // Create chat if it doesn't exist
+            { upsert: true }  // Creates chat if it doesn't exist
         );
 
         res.json({ botResponse: botResponse });
 
     } catch (error) {
-        console.error('Error in /chat route:', error);
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal Server Error. Try Again' });
         }
@@ -72,7 +71,7 @@ router.post('/chat', authenticateOptional, async (req, res) => {
 
 
 router.post('/image', authenticateOptional, upload.single('image'), async (req, res) => {
-    const userId = req.userId; // This will be undefined if the user is not authenticated
+    const userId = req.userId;
     const imageFile = req.file;
 
     if (!imageFile) {
@@ -112,7 +111,6 @@ router.post('/image', authenticateOptional, upload.single('image'), async (req, 
         res.json({ botResponse: botResponse });
 
     } catch (error) {
-        console.error('Error in /image route:', error);
         if (!res.headersSent) {
             res.status(500).json({ error: 'Error processing image. Try Again' });
         }
@@ -125,19 +123,17 @@ router.get('/chat-history', async (req, res) => {
     try {
         const authHeader = req.headers['authorization'];
 
-        // Check if the Authorization header is present and properly formatted
+        // Checking if the Authorization header is present and properly formatted
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ error: 'Unauthorized access, no token provided' });
         }
 
-        // Extract the token (remove 'Bearer ' prefix)
+        // Extracts the token (remove 'Bearer ' prefix)
         const token = authHeader.split(' ')[1];
-        // console.log('Token:', token);
 
-        // Verify the JWT and extract userId
+        // Verifying the JWT and extract userId
         const decoded = jwt.verify(token, secretKey);
         const userId = decoded.userId;
-        // console.log('Decoded userId:', userId);
 
         const db = await connectToDatabase();
         const chatCollection = db.collection('Chat_History');
@@ -150,7 +146,6 @@ router.get('/chat-history', async (req, res) => {
 
         res.json(chat.messages);
     } catch (error) {
-        console.log('Error retrieving chat history:', error);
         res.status(500).json({ error: 'Internal Server Error, Login Again.' });
     }
 });
@@ -159,15 +154,15 @@ router.delete('/delete-history/:messageId', async (req, res) => {
     try {
         const authHeader = req.headers['authorization'];
 
-        // Check if the Authorization header is present and properly formatted
+        // Checking if the Authorization header is present and properly formatted
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ error: 'Unauthorized access, no token provided' });
         }
 
-        // Extract the token (remove 'Bearer ' prefix)
+        // Extracts the token (remove 'Bearer ' prefix)
         const token = authHeader.split(' ')[1];
 
-        // Verify the JWT and extract userId
+        // Verifying the JWT and extract userId
         const decoded = jwt.verify(token, secretKey);
         const userId = decoded.userId;
 
@@ -176,11 +171,11 @@ router.delete('/delete-history/:messageId', async (req, res) => {
 
         const messageId = req.params.messageId;
 
-        // Check if messageId is a valid ObjectId (24 hex chars), if not skip ObjectId conversion
+        // Checking if messageId is a valid ObjectId (24 hex chars), if not skip ObjectId conversion
         const isValidObjectId = ObjectId.isValid(messageId) && String(new ObjectId(messageId)) === messageId;
         const objectId = isValidObjectId ? new ObjectId(messageId) : messageId;
 
-        // Delete a specific message by its _id and userId
+        // Deletes a specific message by its _id and userId
         const result = await chatCollection.updateOne(
             { userId }, // Match the userId
             { $pull: { messages: { _id: objectId } } } // Remove the specific message (with or without ObjectId)
@@ -192,8 +187,8 @@ router.delete('/delete-history/:messageId', async (req, res) => {
 
         res.json({ message: 'Chat message deleted successfully' });
     } catch (error) {
-        console.log('Error deleting chat message:', error);
         res.status(500).json({ error: 'Internal Server Error. Try Again' });
+        // console.log(error)
     }
 });
 
@@ -207,16 +202,16 @@ router.post('/sendEmail', async (req, res) => {
   
     try {
       const transporter = nodemailer.createTransport({
-        service: 'gmail', // or your email provider
+        service: 'gmail', // email provider
         auth: {
-          user: process.env.EMAIL_USER, // Your email address
-          pass: process.env.EMAIL_PASS, // Your email password
+          user: process.env.EMAIL_USER, // email address
+          pass: process.env.EMAIL_PASS, // email password
         },
       });
   
       const mailOptions = {
         from: email,
-        to: process.env.EMAIL_USER, // Your email address where you'd like to receive form submissions
+        to: process.env.EMAIL_USER, 
         subject: `Contact Form Submission from ${name}`,
         text: `You have a new contact form submission from ${name}.\n\nEmail: ${email}\nMessage: ${message}`,
       };
@@ -224,7 +219,6 @@ router.post('/sendEmail', async (req, res) => {
       await transporter.sendMail(mailOptions);
       res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
-      console.error('Error sending email:', error);
       res.status(500).json({ error: 'Error sending email. Try Again' });
     }
   });

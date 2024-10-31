@@ -11,7 +11,7 @@ const Rules = () => {
         <section className="w-full min-h-screen">
             <Navigation />
             <div className='w-full h-full p-4'>
-                <h2 className="font-bold text-3xl md:text-5xl lg:text-7xl uppercase font-[Montserrat]">Community <br /> Guidelines</h2>
+                <h2 className="font-bold text-3xl md:text-5xl lg:text-7xl uppercase font-[Montserrat] tracking-wider">Community <br /> Guidelines</h2>
                 <p className='text-lg my-3 w-full md:w-[70%] text-justify'>To maintain a constructive and safe environment for everyone, we ask all users to adhere to the following guidelines when using SnapSolve. By accessing SnapSolve, you agree to these terms.</p>
                 <div>
                         <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
@@ -106,7 +106,7 @@ const Rules = () => {
                             <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
                                 <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>Help Us Keep SnapSolve Safe and Supportive</h3>
                                 <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
+                                    <p className='text-lg text-justify font-bold'>
                                         If you encounter behavior or content that violates these rules, please report it to our team at <a className='text-blueMain font-bold' href="mailto:emmanueldcode@gmail.com">emmanueldcode@gmail.com</a>. <br />
                                         Thank you for helping us make SnapSolve a safe and constructive platform for everyone.
                                     </p>

@@ -20,7 +20,17 @@ export default {
       'redMain': '#f5014a',
       'transparent': 'transparent'
     },
-    extend: {},
+    extend: {
+      animation: {
+        wiggle: 'wiggle 3s ease-in-out infinite',
+      },
+      keyframes: {
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-5deg)' },
+          '50%': { transform: 'rotate(5deg)' },
+        }
+      }
+    },
   },
   plugins: [
     tailwindScrollbar,

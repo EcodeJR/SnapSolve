@@ -49,9 +49,9 @@ const Navigation = () => {
 
     const [smallscreen, Setsmallscreen] = useState(false);
     const Links = [
-        {id: 1, name: 'How it works', value: '#howitworks', AniRef : linkAni},
-        {id: 2, name: 'About', value: '#about', AniRef : linkAni1},
-        {id: 3, name: 'Contact', value: '#contact', AniRef : linkAni2}
+        {id: 1, name: 'How it works', value: '/#howitworks', AniRef : linkAni},
+        {id: 2, name: 'About', value: '/#about', AniRef : linkAni1},
+        {id: 3, name: 'Contact', value: '/#contact', AniRef : linkAni2}
     ];
 
     const toggleNav = () => {
@@ -62,7 +62,7 @@ const Navigation = () => {
     <ul className='flex md:hidden flex-col items-center justify-around w-full min-h-[60vh] text-whiteMain bg-blackMain uppercase absolute top-full left-0 z-20 bg-white p-5' ref={smallNav}>
                 {
                     Links.map(link => (
-                        <li key={link.id}><a href={link.value} onClick={toggleNav} className='font-semibold text-2xl'>{link.name}</a></li>
+                        <li key={link.id}><NavLink to={link.value} onClick={toggleNav} className='font-semibold text-2xl'>{link.name}</NavLink></li>
                     ))
                 }
                 <div className='flex items-center justify-center text-whiteMain font-bold text-xl'>

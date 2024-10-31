@@ -3,6 +3,8 @@ import logo from '../assets/snapsolveLogo.png';
 import gem_img from '../assets/gem_icon-nobg.png';
 import { useState } from "react";
 import Cookies from 'js-cookie';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const Image = () => {
     const [conversation, setConversation] = useState([]); // Array to store the conversation history
@@ -46,6 +48,22 @@ const Image = () => {
                 if (!msg) return '';
 
                 let formattedText = msg;
+
+                // Handle inline LaTeX expressions
+                formattedText = formattedText.replace(/\$\$(.*?)\$\$/g, (match, math) => {
+                    try {
+                        // Render LaTeX using KaTeX
+                        return katex.renderToString(math, {
+                            throwOnError: false,
+                            displayMode: false,
+                        });
+                    } catch (error) {
+                        console.error("Error rendering LaTeX:", error);
+                        return match;
+                    }
+                });
+
+                // Handle other formatting (bold, lists, etc.)
                 formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
                 formattedText = formattedText.replace(/^\* (.*?)(\n|$)/gm, '<li>$1</li>');
                 formattedText = formattedText.replace(/(<li>.*<\/li>)+/g, '<ul>$&</ul>');
@@ -59,6 +77,7 @@ const Image = () => {
 
                 return formattedText;
             };
+
 
             // Update bot's response and reset loading
             setConversation((prevConversation) => {
@@ -87,7 +106,7 @@ const Image = () => {
         <section className="w-full h-fit flex flex-col items-center justify-center">
             { conversation.length === 0 ? ( 
                     <div className="flex items-center justify-center">
-                        <img src={logo} alt="Snapsolves's Logo." draggable="true" className='w-[40px] md:w-[100px] lg:w-[200px]' />
+                        <img src={logo} alt="Snapsolves's Logo." draggable="true" className='w-[100px] md:w-[150px] lg:w-[200px]' />
                     </div>
                 )
             :

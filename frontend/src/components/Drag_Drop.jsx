@@ -58,10 +58,10 @@ const Drag_Drop = ({ handleClick }) => {
         onDrop={handleDrop}
       >
         <FcGallery className="text-gray-500 font-bold text-4xl" />
-        <p className="text-gray-600">Drag and drop images here or click to upload</p>
+        <p className="text-gray-600 text-center">Drag and drop an image here or click to upload</p>
         <input
           type="file"
-          multiple // Allow multiple file uploads
+          //multiple // Allow multiple file uploads
           accept="image/*"
           className="hidden"
           id="image-input"
@@ -71,7 +71,7 @@ const Drag_Drop = ({ handleClick }) => {
           htmlFor="image-input"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
         >
-          Upload Images
+          Upload an Image
         </label>
       </div>
 
