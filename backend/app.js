@@ -5,13 +5,15 @@ const authRoutes = require('./routes/auth');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
+app.options('*', cors());
+
 const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
 // Using CORS middleware to allow requests from specific origins
-const allowedOrigins = ['http://localhost:5173', 'https://snap-solve-ecodejr.vercel.app/', 'https://snap-solve-ecodejr.vercel.app/signin', 'https://snap-solve-ecodejr.vercel.app/signup', 'https://snap-solve-ecodejr.vercel.app/dashboard'];
+const allowedOrigins = ['https://snap-solve-ecodejr.vercel.app'];
 
 app.use(cors({
   origin: allowedOrigins, // List of allowed origins
