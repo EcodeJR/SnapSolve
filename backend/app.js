@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 
 // Using CORS middleware to allow requests from specific origins
-const allowedOrigins = ['http://localhost:5173', 'https://snap-solve-ecodejr.vercel.app'];
+const allowedOrigins = ['http://localhost:5173', 'https://snap-solve-ecodejr.vercel.app/', 'https://snap-solve-ecodejr.vercel.app/signin', 'https://snap-solve-ecodejr.vercel.app/signup', 'https://snap-solve-ecodejr.vercel.app/dashboard'];
 
 app.use(cors({
   origin: allowedOrigins, // List of allowed origins
