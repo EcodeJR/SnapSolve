@@ -17,7 +17,7 @@ const GetInTouch = () => {
       setLoading(true);
   
       try {
-        const res = await fetch('http://localhost:8080/main/sendEmail', {
+        const res = await fetch('https://snap-solve-nine.vercel.app/main/sendEmail', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

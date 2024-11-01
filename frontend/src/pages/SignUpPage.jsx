@@ -37,7 +37,7 @@ const SignUpPage = () => {
         }
       
         try {
-          const response = await axios.post("http://localhost:8080/auth/signup", {
+          const response = await axios.post("https://snap-solve-nine.vercel.app/auth/signup", {
             firstname,
             lastname,
             username,
