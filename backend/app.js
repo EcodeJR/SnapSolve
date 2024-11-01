@@ -14,6 +14,7 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:5173',
   'https://snap-solve-ecodejr.vercel.app',
+  'https://snap-solve-ecodejr-fc5upq1vd-ecodejrs-projects.vercel.app',
 ];
 
 app.use(cors({
