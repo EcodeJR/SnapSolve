@@ -51,6 +51,7 @@ router.post('/signup', async (req, res) => {
     } catch (error) {
         // Log and respond with internal server error
         res.status(500).json({ message: 'Internal server error. Check Network and Try Again.' });
+        console.log("Sign Up Error:", error);
     }
 });
 
@@ -87,6 +88,7 @@ router.post('/signin', async (req, res) => {
         res.json({ message: 'Sign-in successful', token, userName: user.username });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error. Check Network and Try Again.' });
+        console.log("Sign In Error:", error);
     }
 });
 

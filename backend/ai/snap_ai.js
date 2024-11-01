@@ -41,7 +41,7 @@ async function ImagePrompt(img) {
         return text;
     } catch (error) {
         // Catch any error that occurs and log it
-        // console.error('An error occurred in ImagePrompt:', error.message);
+        console.error('An error occurred in ImagePrompt:', error.message);
         return "An Error Occurred. Try Again"
     }
 }
@@ -65,7 +65,7 @@ async function TextPrompt(message) {
             return 'Could not understand your message! Try again be a little more clear and detailed.';  // Return an empty string if the response is invalid
         }
     } catch (error) {
-        // console.log('Error generating content:', error);
+        console.log('Error generating content:', error);
         return 'Internal Server Error! Try again later.';  // Return an empty string in case of an error
     }
 }

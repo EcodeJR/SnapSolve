@@ -64,6 +64,7 @@ router.post('/chat', authenticateOptional, async (req, res) => {
     } catch (error) {
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal Server Error. Try Again' });
+            console.log("Chat Error:", error)
         }
     }
 });
@@ -113,6 +114,7 @@ router.post('/image', authenticateOptional, upload.single('image'), async (req, 
     } catch (error) {
         if (!res.headersSent) {
             res.status(500).json({ error: 'Error processing image. Try Again' });
+            console.log("Image Error:", error)
         }
     }
 });
@@ -147,6 +149,7 @@ router.get('/chat-history', async (req, res) => {
         res.json(chat.messages);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error, Login Again.' });
+        console.log("Chat History Error:", error)
     }
 });
 
@@ -188,7 +191,7 @@ router.delete('/delete-history/:messageId', async (req, res) => {
         res.json({ message: 'Chat message deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error. Try Again' });
-        // console.log(error)
+        console.log("Deleting History Error:",error)
     }
 });
 
@@ -220,6 +223,7 @@ router.post('/sendEmail', async (req, res) => {
       res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
       res.status(500).json({ error: 'Error sending email. Try Again' });
+      console.log("Mail Error:", error);
     }
   });
 
