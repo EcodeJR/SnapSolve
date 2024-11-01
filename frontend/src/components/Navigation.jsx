@@ -68,7 +68,7 @@ const Navigation = () => {
                 <div className='flex items-center justify-center text-whiteMain font-bold text-xl'>
                     <NavLink to="/signin" onClick={toggleNav}>Sign in</NavLink>
                     <span className='mx-2'>/</span>
-                    <NavLink to="/signup" onClick={toggleNav}>Register</NavLink>
+                    <NavLink to="/signup" onClick={toggleNav}>Sign up</NavLink>
                 </div>
     </ul> ;
 

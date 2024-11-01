@@ -4,7 +4,7 @@ import { CiWarning, CiTrash } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import Cookies from 'js-cookie';
 
-const History = ({ onSelectChat }) => {
+const History = ({ onSelectChat, historyUpdated }) => {
     const [chatHistory, setChatHistory] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ const History = ({ onSelectChat }) => {
         };
 
         fetchChatHistory();
-    }, [deleteHistory]);
+    }, [deleteHistory, historyUpdated]);
 
     const toggleDeleteHistory = (messageId) => {
         setSelectedMessageId(messageId);  // Set the selected message ID
@@ -102,7 +102,6 @@ const History = ({ onSelectChat }) => {
                         </div>
                     ) : chatHistory.length > 0 ? (
                         <ul className="w-full">
-                            <marquee direction="left">Refresh page to get History Updated.</marquee>
                             {chatHistory
                             .slice()
                             .reverse()
@@ -140,6 +139,7 @@ const History = ({ onSelectChat }) => {
 // Define the expected prop types for the History component
 History.propTypes = {
     onSelectChat: PropTypes.func.isRequired,
+    historyUpdated: PropTypes.bool.isRequired,
 };
 
 export default History;

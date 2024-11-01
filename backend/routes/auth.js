@@ -42,7 +42,7 @@ router.post('/signup', async (req, res) => {
         // Sets the token in a cookie, httpOnly for security
         res.cookie('token', token, {
             httpOnly: true, 
-            secure: false, // Change to true when in production over HTTPS
+            secure: true, // Change to true when in production over HTTPS
             sameSite: 'lax', // Needed for frontend/backend on different origins
         });
 
@@ -80,7 +80,7 @@ router.post('/signin', async (req, res) => {
         // Sends the token as an HTTP-only cookie
         res.cookie('token', token, {
             httpOnly: true, 
-            secure: false, // Use 'secure' in production with HTTPS // Change to true when in production
+            secure: true, // Use 'secure' in production with HTTPS // Change to true when in production
             sameSite: 'lax' // Needed if frontend and backend are on different origins
         });
 

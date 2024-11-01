@@ -5,8 +5,9 @@ import { useState } from "react";
 import Cookies from 'js-cookie';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import PropTypes from 'prop-types';
 
-const Image = () => {
+const Image = ({ setHistoryUpdated }) => {
     const [conversation, setConversation] = useState([]); // Array to store the conversation history
     const [loading, setLoading] = useState(false);
 
@@ -88,6 +89,10 @@ const Image = () => {
                 };
                 return updatedConversation;
             });
+
+            // Trigger the re-render of History.jsx
+            setHistoryUpdated((prev) => !prev); // Toggle the value to trigger useEffect in History
+
             setLoading(false); // Reset loading after response
         } catch (error) {
             console.error('Error:', error);
@@ -134,6 +139,12 @@ const Image = () => {
         </section>
     </div>
   );
+};
+
+
+// Define the expected prop types for the Image component
+Image.propTypes = {
+    setHistoryUpdated: PropTypes.func.isRequired,
 };
 
 export default Image;

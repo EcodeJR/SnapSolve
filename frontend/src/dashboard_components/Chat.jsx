@@ -7,7 +7,7 @@ import logo from '../assets/snapsolveLogo.png';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
-const Chat = ({ selectedChat }) => {
+const Chat = ({ selectedChat, setHistoryUpdated }) => {
     const [inputText, setInputText] = useState('');
     const [conversation, setConversation] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -93,6 +93,10 @@ const Chat = ({ selectedChat }) => {
                 };
                 return updatedConversation;
             });
+
+            // Trigger the re-render of History.jsx
+            setHistoryUpdated((prev) => !prev); // Toggle the value to trigger useEffect in History
+
             setLoading(false); // Resets loading after response
         } catch (error) {
             console.error('Error:', error);
@@ -161,6 +165,7 @@ Chat.propTypes = {
         message: PropTypes.string,
         botResponse: PropTypes.string,
     }),
+    setHistoryUpdated: PropTypes.func.isRequired,
 };
 
 export default Chat;

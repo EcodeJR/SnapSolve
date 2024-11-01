@@ -16,6 +16,7 @@ const Dashboard = () => {
     const [username, setUsername] = useState("");
     const [selectedChat, setSelectedChat] = useState(null); // Store the selected chat history
     const [showHistory, setShowHistory] = useState(false);
+    const [historyUpdated, setHistoryUpdated] = useState(false); // New state to trigger History.jsx re-render
 
     // Handle logout: Clear the username from state and localStorage
     const handleLogout = () => {
@@ -58,11 +59,14 @@ const Dashboard = () => {
                 ${darkMode ? `bg-blackMain text-whiteMain` : `bg-whiteMain text-blackMain`}`}>
                 <button className="block md:hidden lg:hidden" onClick={toggleHistoryBTN}><IoMdCloseCircleOutline className="text-5xl text-redMain font-bold" /></button>
                 
-                <History onSelectChat={(chat) => {
-                    setSelectedChat(chat); // Set selected chat history
-                    setChatVisible(true);  // Ensure Chat is visible when a chat is selected
-                    setShowHistory(false);
-                }} />
+                <History 
+                    onSelectChat={(chat) => {
+                        setSelectedChat(chat);
+                        setChatVisible(true);
+                        setShowHistory(false);
+                    }}
+                    historyUpdated={historyUpdated} // Pass the state to trigger re-render
+                />
             </div>
             <div className="w-full h-full p-5 overflow-y-scroll">
                 <div className="flex items-center justify-between p-2">
@@ -114,8 +118,8 @@ const Dashboard = () => {
                 <div className="w-full h-fit">
                     {/* Conditionally render Chat or Image based on user selection */}
                     {chatVisible
-                        ? <Chat selectedChat={selectedChat} />
-                        : <Image />
+                        ? <Chat selectedChat={selectedChat} setHistoryUpdated={setHistoryUpdated} />
+                        : <Image setHistoryUpdated={setHistoryUpdated} />
                     }
                 </div>
                 <div className="w-full p-1 flex items-center justify-center"><p className="text-base text-center">For Enquiries or Complaints. Contact us <Link to="/#contact" className="text-greenMain underline">HERE</Link></p></div>
