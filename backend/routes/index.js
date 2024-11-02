@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
     
     const documents = await collection.find({}).toArray();
     res.json(documents);
+    res.send("server is running...")
 });
 
 // Applying middleware to the /chat route
