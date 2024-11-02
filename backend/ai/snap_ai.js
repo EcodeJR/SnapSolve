@@ -1,50 +1,62 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-require('dotenv').config();
+const { connectToDatabase } = require('../db/mongodb');
+require("dotenv").config();
 const fs = require("fs");
 
-// Accessing API key
 const genAI = new GoogleGenerativeAI(process.env.AI_API_KEY);
 
-function fileToGeneratePath(path, mimeType) {
+// Utility to format image data for Generative AI
+function fileToGeneratePath(base64Image, mimeType) {
     return {
         inlineData: {
-            data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+            data: base64Image,
             mimeType: mimeType,
         },
     };
 }
 
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro"});
-
-//This block of code gets prompts from images uploaded by the user.
-async function ImagePrompt(img) {
+// Function to save image to MongoDB and generate AI prompt
+async function ImagePrompt(imgPath) {
     try {
-
-        if (!img) {
-            throw new Error('Image is undefined or invalid.');
+        if (!imgPath) {
+            throw new Error("Image path is undefined or invalid.");
         }
 
-        const prompt = "Check the image for any maths equation, if there is give me a solution to the problem and if there isn't identify and give a detailed explanation as to what it is, and if there isn't tell me whatever seems to be obvious on the image.";
-        const imageParts = [fileToGeneratePath(img, "image/jpeg")];
+        // Convert image to base64
+        const imageBuffer = fs.readFileSync(imgPath);
+        const base64Image = imageBuffer.toString("base64");
 
-        // Safeguard against potential errors during model content generation
+        // Connect to MongoDB and save the image
+        const db = await connectToDatabase();
+        const imagesCollection = db.collection("SnapsolveImages");
+        const imageDocument = await imagesCollection.insertOne({
+            image: base64Image,
+            mimeType: "image/jpeg",
+            createdAt: new Date(),
+        });
+
+        const imageId = imageDocument.insertedId;
+
+        // Prepare prompt and image part for Generative AI
+        const prompt = "Check the image for any maths equation, if there is give me a solution to the problem and if there isn't identify and give a detailed explanation as to what it is, and if there isn't tell me whatever seems to be obvious on the image.";
+        const imageParts = [fileToGeneratePath(base64Image, "image/jpeg")];
+
+        // Generate AI content
         const result = await model.generateContent([prompt, ...imageParts]);
 
-        if (!result || !result.response) {
-            throw new Error('Failed to generate content or missing response.');
-        }
+        // Access the generated text directly
+        const text = result.response.text();  // Access text as a property
 
-        // Ensure the response is handled properly
-        const response = await result.response;
-        const text = await response.text();  // Await the response text
-        return text;
+        return text;  // Return the result and image ID for reference
     } catch (error) {
-        // Catch any error that occurs and log it
-        console.error('An error occurred in ImagePrompt:', error.message);
-        return "An Error Occurred. Try Again"
+        console.error("Error generating content:", error.message);
+        return "An Error Occurred. Try Again";
     }
 }
+
+
 
 
 
