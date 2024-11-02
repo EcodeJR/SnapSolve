@@ -12,13 +12,8 @@ const authenticateOptional = require('../authenticate/authMiddleware');
 const nodemailer = require('nodemailer');
 const secretKey = process.env.JWT_SECRET_KEY || 'your_secret_key';
 
-router.get('/', async (req, res) => {
-    const db = await connectToDatabase();
-    const collection = db.collection('Snapsolve');
-    
-    const documents = await collection.find({}).toArray();
-    res.json(documents);
-    res.send("server is running...")
+router.get('/', (req, res) => {
+    res.send("server is running...");
 });
 
 // Applying middleware to the /chat route
