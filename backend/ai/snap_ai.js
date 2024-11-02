@@ -18,41 +18,20 @@ function fileToGeneratePath(base64Image, mimeType) {
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 // Function to save image to MongoDB and generate AI prompt
-async function ImagePrompt(imgPath) {
+async function ImagePrompt(base64Image) {
     try {
-        if (!imgPath) {
-            throw new Error("Image path is undefined or invalid.");
-        }
-
-        // Convert image to base64
-        const imageBuffer = fs.readFileSync(imgPath);
-        const base64Image = imageBuffer.toString("base64");
-
-        // Connect to MongoDB and save the image
-        const db = await connectToDatabase();
-        const imagesCollection = db.collection("SnapsolveImages");
-        const imageDocument = await imagesCollection.insertOne({
-            image: base64Image,
-            mimeType: "image/jpeg",
-            createdAt: new Date(),
-        });
-
-        const imageId = imageDocument.insertedId;
-
-        // Prepare prompt and image part for Generative AI
         const prompt = "Check the image for any maths equation, if there is give me a solution to the problem and if there isn't identify and give a detailed explanation as to what it is, and if there isn't tell me whatever seems to be obvious on the image.";
         const imageParts = [fileToGeneratePath(base64Image, "image/jpeg")];
 
         // Generate AI content
         const result = await model.generateContent([prompt, ...imageParts]);
 
-        // Access the generated text directly
-        const text = result.response.text();  // Access text as a property
-
-        return text;  // Return the result and image ID for reference
+        // Access the generated text correctly
+        const text = result.response.text();
+        return text;
     } catch (error) {
         console.error("Error generating content:", error.message);
-        return "An Error Occurred. Try Again";
+        throw new Error("Failed to generate content");
     }
 }
 

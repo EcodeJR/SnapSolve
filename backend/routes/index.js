@@ -5,8 +5,9 @@ const router = express.Router();
 const { connectToDatabase } = require('../db/mongodb');
 const { ObjectId } = require('mongodb');
 const { TextPrompt, ImagePrompt } = require('../ai/snap_ai');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const multer = require("multer");
+const upload = multer();
+const fs = require("fs");
 const jwt = require('jsonwebtoken'); // For verifying the JWT
 const authenticateOptional = require('../authenticate/authMiddleware');
 const nodemailer = require('nodemailer');
@@ -67,51 +68,59 @@ router.post('/chat', authenticateOptional, async (req, res) => {
 
 
 
-router.post('/image', authenticateOptional, upload.single('image'), async (req, res) => {
+router.post("/image", upload.single("image"), async (req, res) => {
     const userId = req.userId;
     const imageFile = req.file;
 
     if (!imageFile) {
-        return res.status(400).json({ error: 'No image file uploaded' });
+        return res.status(400).json({ error: "No image file uploaded" });
     }
 
     try {
-        const botResponse = await ImagePrompt(imageFile.path); // Get bot response
+        // Convert uploaded image to base64
+        const base64Image = imageFile.buffer.toString("base64");
 
-        // If the user is not authenticated, just return the bot's response without saving
+        // Generate AI response based on the image
+        const botResponse = await ImagePrompt(base64Image);
+
+        // If user is not authenticated, return only the bot response
         if (!userId) {
-            return res.json({ botResponse: botResponse });
+            return res.json({ botResponse });
         }
 
-        // User is authenticated, proceed to save the chat
+        // Save image and chat in MongoDB
         const db = await connectToDatabase();
-        const chatCollection = db.collection('Chat_History');
-        let chat = await chatCollection.findOne({ userId });
+        const chatCollection = db.collection("Chat_History");
+        const imagesCollection = db.collection("Images");
 
-        if (!chat) {
-            chat = { userId, messages: [] };
-        }
+        // Save the image in SnapsolveImages collection
+        const imageDocument = await imagesCollection.insertOne({
+            userId,
+            image: base64Image,
+            mimeType: "image/jpeg",
+            createdAt: new Date(),
+        });
+        const imageId = imageDocument.insertedId;
 
+        // Save chat history in Chat_History collection
         const newMessage = {
             _id: new ObjectId(),
-            message: 'Image uploaded',
+            message: "Image uploaded",
             botResponse,
-            timestamp: new Date()
+            imageId, // Reference to the stored image
+            timestamp: new Date(),
         };
 
         await chatCollection.updateOne(
             { userId },
             { $push: { messages: newMessage } },
-            { upsert: true }  // Create chat if it doesn't exist
+            { upsert: true } // Create new chat document if it doesn't exist
         );
 
-        res.json({ botResponse: botResponse });
-
+        res.json({ botResponse });
     } catch (error) {
-        if (!res.headersSent) {
-            res.status(500).json({ error: 'Error processing image. Try Again' });
-            console.log("Image Error:", error)
-        }
+        console.error("Image Error:", error.message);
+        res.status(500).json({ error: "Error processing image. Try Again" });
     }
 });
 
