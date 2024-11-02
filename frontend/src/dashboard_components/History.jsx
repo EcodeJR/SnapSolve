@@ -17,7 +17,7 @@ const History = ({ onSelectChat, historyUpdated }) => {
                 const token = Cookies.get('token');
                 if (!token) throw new Error('Register or Signin to View History.');
 
-                const response = await fetch('http://localhost:8080/main/chat-history', {
+                const response = await fetch('https://snap-solve-nine.vercel.app/main/chat-history', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
