@@ -1,5 +1,4 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { connectToDatabase } = require('../db/mongodb');
 require("dotenv").config();
 const fs = require("fs");
 
