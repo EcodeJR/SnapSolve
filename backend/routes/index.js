@@ -61,7 +61,7 @@ router.post('/chat', authenticateOptional, async (req, res) => {
     } catch (error) {
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal Server Error. Try Again' });
-            console.log("Chat Error:", error)
+            // console.log("Chat Error:", error)
         }
     }
 });
@@ -71,8 +71,8 @@ router.post('/chat', authenticateOptional, async (req, res) => {
 router.post("/image", authenticateOptional, upload.single("image"), async (req, res) => {
     const userId = req.userId;
     const imageFile = req.file;
-    console.log(userId)
-    console.log(imageFile)
+    // console.log(userId)
+    // console.log(imageFile)
 
 
     if (!imageFile) {
@@ -84,14 +84,14 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
         // console.log("Base64 Image:", base64Image);
 
         const botResponse = await ImagePrompt(base64Image);
-        console.log("Generated bot response:", botResponse);
+        // console.log("Generated bot response:", botResponse);
 
         if (!userId) {
             return res.json({ botResponse });
         }
 
         const db = await connectToDatabase();
-        console.log("Database connected:", db !== undefined);
+        // console.log("Database connected:", db !== undefined);
 
         const chatCollection = db.collection("Chat_History");
         const imagesCollection = db.collection("Images");
@@ -102,7 +102,7 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
             mimeType: "image/jpeg",
             createdAt: new Date(),
         });
-        console.log("Image stored successfully:", imageDocument.insertedId);
+        // console.log("Image stored successfully:", imageDocument.insertedId);
 
         const newMessage = {
             _id: new ObjectId(),
@@ -117,11 +117,11 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
             { $push: { messages: newMessage } },
             { upsert: true }
         );
-        console.log("Chat history updated");
+        // console.log("Chat history updated");
 
         res.json({ botResponse });
     } catch (error) {
-        console.error("Image Error:", error.message);
+        // console.error("Image Error:", error.message);
         res.status(500).json({ error: "Error processing image. Try Again" });
     }
 });
@@ -157,7 +157,7 @@ router.get('/chat-history', async (req, res) => {
         res.json(chat.messages);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error, Login Again.' });
-        console.log("Chat History Error:", error)
+        // console.log("Chat History Error:", error)
     }
 });
 
@@ -199,7 +199,7 @@ router.delete('/delete-history/:messageId', async (req, res) => {
         res.json({ message: 'Chat message deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error. Try Again' });
-        console.log("Deleting History Error:",error)
+        // console.log("Deleting History Error:",error)
     }
 });
 
@@ -231,7 +231,7 @@ router.post('/sendEmail', async (req, res) => {
       res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
       res.status(500).json({ error: 'Error sending email. Try Again' });
-      console.log("Mail Error:", error);
+    //   console.log("Mail Error:", error);
     }
   });
 
