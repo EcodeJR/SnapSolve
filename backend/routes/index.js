@@ -68,54 +68,56 @@ router.post('/chat', authenticateOptional, async (req, res) => {
 
 
 
-router.post("/image", upload.single("image"), async (req, res) => {
+router.post("/image", authenticateOptional, upload.single("image"), async (req, res) => {
     const userId = req.userId;
     const imageFile = req.file;
+    console.log(userId)
+    console.log(imageFile)
+
 
     if (!imageFile) {
         return res.status(400).json({ error: "No image file uploaded" });
     }
 
     try {
-        // Convert uploaded image to base64
         const base64Image = imageFile.buffer.toString("base64");
+        // console.log("Base64 Image:", base64Image);
 
-        // Generate AI response based on the image
         const botResponse = await ImagePrompt(base64Image);
+        console.log("Generated bot response:", botResponse);
 
-        // If user is not authenticated, return only the bot response
         if (!userId) {
             return res.json({ botResponse });
         }
 
-        // Save image and chat in MongoDB
         const db = await connectToDatabase();
+        console.log("Database connected:", db !== undefined);
+
         const chatCollection = db.collection("Chat_History");
         const imagesCollection = db.collection("Images");
 
-        // Save the image in SnapsolveImages collection
         const imageDocument = await imagesCollection.insertOne({
             userId,
             image: base64Image,
             mimeType: "image/jpeg",
             createdAt: new Date(),
         });
-        const imageId = imageDocument.insertedId;
+        console.log("Image stored successfully:", imageDocument.insertedId);
 
-        // Save chat history in Chat_History collection
         const newMessage = {
             _id: new ObjectId(),
             message: "Image uploaded",
             botResponse,
-            imageId, // Reference to the stored image
+            imageId: imageDocument.insertedId,
             timestamp: new Date(),
         };
 
         await chatCollection.updateOne(
             { userId },
             { $push: { messages: newMessage } },
-            { upsert: true } // Create new chat document if it doesn't exist
+            { upsert: true }
         );
+        console.log("Chat history updated");
 
         res.json({ botResponse });
     } catch (error) {
@@ -123,6 +125,7 @@ router.post("/image", upload.single("image"), async (req, res) => {
         res.status(500).json({ error: "Error processing image. Try Again" });
     }
 });
+
 
 
 

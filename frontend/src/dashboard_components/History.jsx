@@ -53,7 +53,7 @@ const History = ({ onSelectChat, historyUpdated }) => {
             const token = Cookies.get('token');
             if (!token) throw new Error('Register or Signin to View History.');
 
-            const response = await fetch(`https://snap-solve-nine.vercel.app/delete-history/${messageId}`, {
+            const response = await fetch(`https://snap-solve-nine.vercel.app/main/delete-history/${messageId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

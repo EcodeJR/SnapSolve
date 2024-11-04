@@ -87,7 +87,7 @@ const Navigation = () => {
                 <div className='flex items-center justify-center font-bold'>
                     <NavLink to="/signin">Sign in</NavLink>
                     <span className='mx-2'>/</span>
-                    <NavLink to="/signup">Register</NavLink>
+                    <NavLink to="/signup">Sign up</NavLink>
                 </div>
             </ul>
             {
