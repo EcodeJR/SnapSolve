@@ -29,8 +29,9 @@ async function ImagePrompt(base64Image) {
         const text = result.response.text();
         return text;
     } catch (error) {
-        console.error("Error generating content:", error.message);
-        throw new Error("Failed to generate content");
+        // console.error("Error generating content:", error.message);
+        // throw new Error("Failed to generate content");
+        return 'Internal Server Error! Try again later.';
     }
 }
 
@@ -55,7 +56,7 @@ async function TextPrompt(message) {
             return 'Could not understand your message! Try again be a little more clear and detailed.';  // Return an empty string if the response is invalid
         }
     } catch (error) {
-        console.log('Error generating content:', error);
+        // console.log('Error generating content:', error);
         return 'Internal Server Error! Try again later.';  // Return an empty string in case of an error
     }
 }
