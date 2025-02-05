@@ -14,7 +14,7 @@ function fileToGeneratePath(base64Image, mimeType) {
     };
 }
 
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });//gemini-1.5-pro
 
 // Function to save image to MongoDB and generate AI prompt
 async function ImagePrompt(base64Image) {
@@ -29,7 +29,7 @@ async function ImagePrompt(base64Image) {
         const text = result.response.text();
         return text;
     } catch (error) {
-        // console.error("Error generating content:", error.message);
+        console.error("Error generating content:", error.message);
         // throw new Error("Failed to generate content");
         return 'Internal Server Error! Try again later.';
     }
@@ -56,7 +56,7 @@ async function TextPrompt(message) {
             return 'Could not understand your message! Try again be a little more clear and detailed.';  // Return an empty string if the response is invalid
         }
     } catch (error) {
-        // console.log('Error generating content:', error);
+        console.log('Error generating content:', error);
         return 'Internal Server Error! Try again later.';  // Return an empty string in case of an error
     }
 }
