@@ -61,7 +61,7 @@ router.post('/chat', authenticateOptional, async (req, res) => {
     } catch (error) {
         if (!res.headersSent) {
             res.status(500).json({ error: 'Internal Server Error. Try Again' });
-            // console.log("Chat Error:", error)
+            console.log("Chat Error:", error)
         }
     }
 });
@@ -121,7 +121,7 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
 
         res.json({ botResponse });
     } catch (error) {
-        // console.error("Image Error:", error.message);
+        console.error("Image Error:", error.message);
         res.status(500).json({ error: "Error processing image. Try Again" });
     }
 });
