@@ -29,10 +29,10 @@
     ],
     "functions": {
       "api/ai/snap_ai.js": {
-        "maxDuration": 50
+        "maxDuration": 60
       },
       "api/routes/index.js": {
-        "maxDuration": 50
+        "maxDuration": 60
       }
     }
   }
