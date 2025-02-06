@@ -30,7 +30,7 @@ const Image = ({ setHistoryUpdated }) => {
             const formData = new FormData();
             formData.append('image', imgArray[0]);
 
-            const res = await fetch('http://localhost:8080/main/image', { //snap-solve-nine.vercel.app
+            const res = await fetch('https://snap-solve-nine.vercel.app', { //localhost:8080/main/image
                 method: 'POST',
                 headers,
                 body: formData,
@@ -59,7 +59,7 @@ const Image = ({ setHistoryUpdated }) => {
                             displayMode: false,
                         });
                     } catch (error) {
-                        console.log("Error rendering LaTeX:", error);
+                        console.log("Error rendering LaTeX--:", error);
                         return match;
                     }
                 });
