@@ -30,7 +30,7 @@ const Image = ({ setHistoryUpdated }) => {
             const formData = new FormData();
             formData.append('image', imgArray[0]);
 
-            const res = await fetch('https://snap-solve-nine.vercel.app', { //localhost:8080/main/image
+            const res = await fetch('https://snap-solve-nine.vercel.app/main/image', { //localhost:8080
                 method: 'POST',
                 headers,
                 body: formData,
