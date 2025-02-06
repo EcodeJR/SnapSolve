@@ -70,7 +70,7 @@ const Chat = ({ selectedChat, setHistoryUpdated }) => {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const res = await fetch('https://snap-solve-nine.vercel.app/main/chat', { //localhost:8080
+            const res = await fetch('http://localhost:8080/main/chat', { //snap-solve-nine.vercel.app
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ message: inputText }),
