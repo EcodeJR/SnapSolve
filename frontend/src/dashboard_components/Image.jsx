@@ -59,7 +59,7 @@ const Image = ({ setHistoryUpdated }) => {
                             displayMode: false,
                         });
                     } catch (error) {
-                        console.error("Error rendering LaTeX:", error);
+                        console.log("Error rendering LaTeX:", error);
                         return match;
                     }
                 });
@@ -95,7 +95,7 @@ const Image = ({ setHistoryUpdated }) => {
 
             setLoading(false); // Reset loading after response
         } catch (error) {
-            console.error('Error:', error);
+            console.log('Error:', error);
             const errorMessage = { message: 'Error communicating with server' };
             setConversation((prevConversation) => [...prevConversation, errorMessage]);
             setLoading(false);

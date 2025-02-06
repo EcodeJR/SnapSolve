@@ -29,7 +29,7 @@ async function ImagePrompt(base64Image) {
         const text = result.response.text();
         return text;
     } catch (error) {
-        console.error("Error generating content:", error.message);
+        console.log("Error generating content:", error.message);
         // throw new Error("Failed to generate content");
         return 'Internal Server Error! Try again later.';
     }
