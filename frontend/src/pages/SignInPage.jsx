@@ -56,12 +56,12 @@ const SignInPage = () => {
 
 return ( 
     <section className='w-full min-h-screen flex flex-col lg:flex-row bg-whiteMain'>
-        {/* Left Section - Image */}
-        <div className='w-full lg:w-[50%] h-[40vh] lg:h-screen relative overflow-hidden'>
+        {/* Left Section - Fixed */}
+        <div className='w-full lg:w-1/2 h-[40vh] lg:h-full lg:fixed top-0 left-0'>
             <img 
                 src={sign_img} 
                 alt="Forest" 
-                className='absolute inset-0 w-full h-full object-cover transform scale-105 filter brightness-[0.85]' 
+                className='w-full h-full object-cover filter brightness-[0.85]' 
             />
             <div className='absolute inset-0 bg-gradient-to-b from-black/30 to-transparent'>
                 <div className='w-full p-6 flex items-center justify-between'>
@@ -84,8 +84,9 @@ return (
         </div>
 
         {/* Right Section - Form */}
-        <div className='w-full lg:w-[50%] min-h-[60vh] lg:h-screen flex flex-col p-8 lg:p-16'>
-            <div className='flex-1 flex flex-col justify-center max-w-md mx-auto w-full'>
+        <div className='w-full lg:w-1/2 min-h-fit lg:ml-[50%] relative'>
+            <div className='w-full min-h-full p-8 lg:p-16'>
+                <div className='max-w-md mx-auto'>
                 <h2 className='font-bold text-4xl lg:text-5xl mb-2'>Sign In</h2>
                 <h4 className='text-2xl font-bold text-black/80 mt-8 mb-2'>
                     Hey there, Explorer!
@@ -189,6 +190,7 @@ return (
                         </a>
                     ))}
                 </div>
+            </div>
             </div>
         </div>
     </section>
