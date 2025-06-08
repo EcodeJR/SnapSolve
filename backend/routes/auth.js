@@ -4,6 +4,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { connectToDatabase } = require('../db/mongodb');
 const { UserNew } = require('../models/user');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+require('dotenv').config(); // Load environment variables from .env file
+// Ensure that the environment variables are loaded
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET_KEY || 'your_secret_key';
@@ -89,6 +93,126 @@ router.post('/signin', async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Internal server error. Check Network and Try Again.' });
         console.log("Sign In Error:", error);
+    }
+});
+
+// Request password reset
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const db = await connectToDatabase();
+        const usersCollection = db.collection('users');
+        const user = await usersCollection.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Email not found' });
+        }
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = Date.now() + 3600000; // 1 hour
+
+        // Store reset token in database
+        await usersCollection.updateOne(
+            { email },
+            { 
+                $set: { 
+                    resetToken,
+                    resetTokenExpiry 
+                } 
+            }
+        );
+
+        // Send email
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        // Construct reset URL
+        const urlToreset = process.env.NODE_ENV === 'production' 
+            ? process.env.FRONTEND_URL_PROD
+            : process.env.FRONTEND_URL_DEV;
+
+        const resetUrl = `${urlToreset}/reset-password/${resetToken}`;
+
+        // const { imageToBase64 } = require('../scripts/imageToBase64');
+        // const logoBase64 = imageToBase64();
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Password Reset Request',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <div style="text-align: center; padding: 20px;">
+                        <h2 style="color: #111827; margin-bottom: 14px;">SnapSolve</h2>
+                    </div>
+                    <div style="padding: 20px; background-color: #f9fafb; border-radius: 8px;">
+                        <h1 style="color: #111827; margin-bottom: 16px;">Password Reset Request</h1>
+                        <p style="color: #4b5563; margin-bottom: 16px;">We received a request to reset your password. If you did not make this request, please ignore this email.</p>
+                        <p style="color: #4b5563; margin-bottom: 24px;">Click the button below to reset your password. This link will expire in 1 hour.</p>
+                        <div style="text-align: center;">
+                            <a href="${resetUrl}" 
+                            style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; 
+                                    color: white; text-decoration: none; border-radius: 6px; 
+                                    font-weight: 500;">Reset Password</a>
+                        </div>
+                        <p style="color: #6b7280; margin-top: 24px; font-size: 14px;">
+                            If the button doesn't work, copy and paste this link into your browser:<br>
+                            <a href="${resetUrl}" style="color: #3b82f6; word-break: break-all;">${resetUrl}</a>
+                        </p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <p style="color: #6b7280; font-size: 14px;">
+                            © ${new Date().getFullYear()} SnapSolve. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            `
+        });
+                res.json({ message: 'Password reset link sent to email' });
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                res.status(500).json({ message: 'Error processing request. Try again!' });
+            }
+});
+
+// Reset password
+router.post('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    try {
+        const db = await connectToDatabase();
+        const usersCollection = db.collection('users');
+
+        const user = await usersCollection.findOne({
+            resetToken: token,
+            resetTokenExpiry: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset token' });
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        await usersCollection.updateOne(
+            { _id: user._id },
+            {
+                $set: { passwordHash },
+                $unset: { resetToken: "", resetTokenExpiry: "" }
+            }
+        );
+
+        res.json({ message: 'Password successfully reset' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ message: 'Error resetting password' });
     }
 });
 

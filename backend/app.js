@@ -10,25 +10,23 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Using CORS middleware to allow requests from specific origins
+// Dynamically set allowed origins based on environment
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://snap-solve-ecodejr.vercel.app',
-  'https://snap-solve-ecodejr-fc5upq1vd-ecodejrs-projects.vercel.app',
-];
+    process.env.FRONTEND_URL_DEV,
+    process.env.FRONTEND_URL_PROD,
+    'https://snap-solve-ecodejr-fc5upq1vd-ecodejrs-projects.vercel.app'
+].filter(Boolean);
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin, like mobile apps or Postman
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
 }));
-
 
 
 // Middleware to parse cookies

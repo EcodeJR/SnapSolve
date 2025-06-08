@@ -1,129 +1,113 @@
-import Navigation from '../components/Navigation';
-import Footer from "../components/Footer";
-import { useEffect } from 'react';
+import PolicyLayout from '../components/PolicyLayout';
+import PropTypes from 'prop-types';
+
+const RuleSection = ({ title, content, listItems }) => (
+    <div className="flex flex-col lg:flex-row items-start justify-between gap-8 group">
+        <h3 className="w-full lg:w-[40%] text-xl lg:text-2xl font-bold uppercase text-gray-800 group-hover:text-purpleMain transition-colors duration-300">
+            {title}
+        </h3>
+        <div className="w-full lg:w-[60%] space-y-4">
+            <p className="text-gray-600 leading-relaxed">{content}</p>
+            {listItems && (
+                <ul className="space-y-3 list-disc pl-5 marker:text-purpleMain">
+                    {listItems.map((item, index) => (
+                        <li key={index} className="text-gray-600 pl-2">{item}</li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    </div>
+);
 
 const Rules = () => {
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+    return (
+        <PolicyLayout 
+            title="Community Guidelines"
+            subtitle="To maintain a constructive and safe environment for everyone, we ask all users to adhere to the following guidelines when using SnapSolve. By accessing SnapSolve, you agree to these terms."
+        >
+            <RuleSection 
+                title="1. Respectful and Appropriate Content"
+                content="Do not submit content that is offensive, obscene, or inappropriate. This includes language, images, or other materials that:"
+                listItems={[
+                    "Are sexually explicit or contain nudity",
+                    "Are violent or promote harm",
+                    "Use hateful, racist, or discriminatory language",
+                    "Contain personal information of others",
+                    "Violate intellectual property rights"
+                ]}
+            />
 
-    return ( 
-        <section className="w-full min-h-screen">
-            <Navigation />
-            <div className='w-full h-full p-4'>
-                <h2 className="font-bold text-3xl md:text-5xl lg:text-7xl uppercase font-[Montserrat] tracking-wider">Community <br /> Guidelines</h2>
-                <p className='text-lg my-3 w-full md:w-[70%] text-justify'>To maintain a constructive and safe environment for everyone, we ask all users to adhere to the following guidelines when using SnapSolve. By accessing SnapSolve, you agree to these terms.</p>
-                <div>
-                        <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>1. Respectful and Appropriate Content</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        Do not submit content that is offensive, obscene, or inappropriate. This includes language, images, or other materials that:
-                                    </p>
-                                    <ul className='text-lg font-normal list-disc'>
-                                        <li>Are sexually explicit or contain nudity</li>
-                                        <li>Are violent or promote harm</li>
-                                        <li>Use hateful, racist, or discriminatory language</li>
-                                    </ul>
-                                </div>
-                            </div>
+            <RuleSection 
+                title="2. Academic Integrity"
+                content="While SnapSolve is designed to help you learn and understand concepts, you should:"
+                listItems={[
+                    "Use the platform as a learning tool, not just to get answers",
+                    "Understand the solutions provided and learn from them",
+                    "Follow your institution's academic integrity policies",
+                    "Cite SnapSolve when using it as a reference",
+                    "Not use the platform during exams or closed-book assessments"
+                ]}
+            />
 
+            <RuleSection 
+                title="3. Appropriate Usage"
+                content="To ensure the best experience for all users:"
+                listItems={[
+                    "Submit clear, legible images of questions",
+                    "One question per submission for accurate responses",
+                    "Do not spam or submit duplicate questions",
+                    "Use appropriate language in communications",
+                    "Report any technical issues or inappropriate content"
+                ]}
+            />
 
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>2. No Harassment or Abuse</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        Refrain from harassing, bullying, or intimidating behavior. SnapSolve is here to provide academic support and a helpful experience for all users, so please respect others and avoid offensive interactions.
-                                    </p>
-                                </div>
-                            </div>
+            <RuleSection 
+                title="4. Privacy & Security"
+                content="To protect your privacy and maintain security:"
+                listItems={[
+                    "Do not share your login credentials",
+                    "Keep your personal information private",
+                    "Report any suspicious activity",
+                    "Use strong, unique passwords",
+                    "Log out when using shared devices"
+                ]}
+            />
 
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>3. Educational Purpose Only</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        Use SnapSolve solely for educational purposes. Uploading images or text unrelated to academic help or that attempt to manipulate the AI’s purpose can result in restricted access or account suspension.
-                                    </p>
-                                </div>
-                            </div>
+            <RuleSection 
+                title="5. Content Rights"
+                content="Regarding content submitted to SnapSolve:"
+                listItems={[
+                    "You retain rights to content you submit",
+                    "Grant SnapSolve license to use submitted content",
+                    "Respect copyright and intellectual property rights",
+                    "Do not share solutions without permission",
+                    "Credit original sources when applicable"
+                ]}
+            />
 
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>4. No Misinformation or Malicious Content</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        Do not attempt to use SnapSolve to distribute false information or harmful content, including but not limited to:
-                                    </p>
-                                    <ul className='text-lg font-normal list-disc'>
-                                        <li>False or manipulated information</li>
-                                        <li>Viruses, malware, or other harmful code</li>
-                                    </ul>
-                                </div>
-                            </div>
+            <RuleSection 
+                title="6. Consequences"
+                content="Violation of these guidelines may result in:"
+                listItems={[
+                    "Temporary suspension of account access",
+                    "Permanent account termination",
+                    "Removal of submitted content",
+                    "Reporting to relevant authorities if necessary",
+                    "No refund of any paid services"
+                ]}
+            />
+        </PolicyLayout>
+    );
+};
 
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>5. Account Integrity</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        If SnapSolve requires account creation, keep your login credentials private, and do not impersonate others. Misuse of multiple accounts or impersonating someone else’s identity is prohibited.
-                                    </p>
-                                </div>
-                            </div>
+RuleSection.propTypes = {
+    title: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    listItems: PropTypes.arrayOf(PropTypes.string)
+};
 
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>6. Respect for AI and System Integrity</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        Do not attempt to bypass, overload, or interfere with the AI’s operation through excessive requests, reverse engineering, or unauthorized access attempts.
-                                    </p>
-                                </div>
-                            </div>
+RuleSection.defaultProps = {
+    listItems: null
+};
 
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>7. Prohibited Content</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        SnapSolve does not allow the use of any content that:
-                                    </p>
-                                    <ul className='text-lg font-normal list-disc'>
-                                        <li>Promotes illegal activity</li>
-                                        <li>Infringes on intellectual property rights</li>
-                                        <li>Attempts to evade or mislead the AI’s educational focus</li>
-                                        <li>Contains spam or advertising not related to educational purposes</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>8. Consequences for Violations</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg font-normal text-justify'>
-                                        Violation of these guidelines may result in restricted access to SnapSolve, suspension of your account, or, in severe cases, a permanent ban from the platform.
-                                    </p>
-                                </div>
-                            </div>
-
-
-                            <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                                <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>Help Us Keep SnapSolve Safe and Supportive</h3>
-                                <div className='w-full lg:w-[50%]'>
-                                    <p className='text-lg text-justify font-bold'>
-                                        If you encounter behavior or content that violates these rules, please report it to our team at <a className='text-blueMain font-bold' href="mailto:emmanueldcode@gmail.com">emmanueldcode@gmail.com</a>. <br />
-                                        Thank you for helping us make SnapSolve a safe and constructive platform for everyone.
-                                    </p>
-                                </div>
-                            </div>
-
-
-
-
-
-
-
-                </div>
-            </div>
-            <Footer />
-        </section>
-     );
-}
- 
 export default Rules;

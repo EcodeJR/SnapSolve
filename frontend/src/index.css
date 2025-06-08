@@ -7,3 +7,85 @@
   padding: 0;
   margin: 0;
 };
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}
+
+/* .glass-effect {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+} */
+/* Remove duplicate .glass-effect definitions and keep only this one */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  opacity: 1 !important; /* Force opacity */
+}
+
+/* Add z-index to ensure visibility */
+#howitworks {
+  position: relative;
+  z-index: 10;
+}
+
+/* Add visibility utilities */
+@layer utilities {
+  .visible-important {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 8px 32px 0 rgba(31, 38, 135, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Add subtle animation to the gradient */
+@keyframes gradientFlow {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+}
+
+.bg-gradient-animate {
+    background-size: 200% 200%;
+    animation: gradientFlow 15s ease infinite;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #3c2848 0%, #6b46c1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-gradient {
+  background: linear-gradient(
+    to right,
+    rgba(60, 40, 72, 0.1),
+    rgba(107, 70, 193, 0.1)
+  );
+}

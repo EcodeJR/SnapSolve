@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { connectToDatabase } = require('../db/mongodb');
 const { ObjectId } = require('mongodb');
-const { TextPrompt, ImagePrompt } = require('../ai/snap_ai');
+const { TextPrompt, ImagePrompt, generateStudyGuide, analyzeWriting } = require('../ai/snap_ai');
 const multer = require("multer");
 const upload = multer();
 const fs = require("fs");
@@ -12,6 +12,10 @@ const jwt = require('jsonwebtoken'); // For verifying the JWT
 const authenticateOptional = require('../authenticate/authMiddleware');
 const nodemailer = require('nodemailer');
 const secretKey = process.env.JWT_SECRET_KEY || 'your_secret_key';
+
+const { StudyGuide } = require("../models/StudyGuide");
+
+const Document = require("../models/Document");
 
 router.get('/', (req, res) => {
     res.send("server is running...");
@@ -47,7 +51,9 @@ router.post('/chat', authenticateOptional, async (req, res) => {
             _id: new ObjectId(),
             message,
             botResponse,
-            timestamp: new Date()
+            timestamp: new Date(),
+            type: 'chat',
+            createdAt: new Date() // Add this line
         };
 
         await chatCollection.updateOne(
@@ -81,18 +87,13 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
 
     try {
         const base64Image = imageFile.buffer.toString("base64");
-        // console.log("Base64 Image:", base64Image);
-
-        const botResponse = await ImagePrompt(base64Image);
-        // console.log("Generated bot response:", botResponse);
+        const { title, content } = await ImagePrompt(base64Image);
 
         if (!userId) {
-            return res.json({ botResponse });
+            return res.json({ botResponse: content, title });
         }
 
         const db = await connectToDatabase();
-        // console.log("Database connected:", db !== undefined);
-
         const chatCollection = db.collection("Chat_History");
         const imagesCollection = db.collection("Images");
 
@@ -102,14 +103,16 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
             mimeType: "image/jpeg",
             createdAt: new Date(),
         });
-        // console.log("Image stored successfully:", imageDocument.insertedId);
 
+        // In the image route
         const newMessage = {
             _id: new ObjectId(),
-            message: "Image uploaded",
-            botResponse,
+            message: title, // Use the extracted title here
+            botResponse: content,
             imageId: imageDocument.insertedId,
             timestamp: new Date(),
+            type: 'image',
+            createdAt: new Date()
         };
 
         await chatCollection.updateOne(
@@ -119,7 +122,7 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
         );
         // console.log("Chat history updated");
 
-        res.json({ botResponse });
+        res.json({ botResponse: content, title });
     } catch (error) {
         console.error("Image Error:", error.message);
         res.status(500).json({ error: "Error processing image. Try Again" });
@@ -127,6 +130,90 @@ router.post("/image", authenticateOptional, upload.single("image"), async (req, 
 });
 
 
+// Analyze text for grammar, spelling, and logic errors
+
+router.post("/analyze", authenticateOptional, async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: "Text input is required" });
+        }
+
+        // AI analyzes the text
+        const { correctedText, suggestions } = await analyzeWriting(text);
+
+        // If user is authenticated, save to database
+        if (req.userId) {
+            const document = new Document(
+                req.userId,
+                text,
+                correctedText,
+                suggestions
+            );
+
+            const db = await connectToDatabase();
+            const documentsCollection = db.collection('Documents');
+            await documentsCollection.insertOne(document);
+        }
+
+        res.json({ 
+            message: "Analysis complete", 
+            correctedText, 
+            suggestions 
+        });
+
+    } catch (error) {
+        console.error("Analysis Error:", error);
+        res.status(500).json({ error: "Error analyzing text. " + error.message });
+    }
+});
+
+
+// Update the generate route to use the new StudyGuide class
+
+router.post("/generate", authenticateOptional, async (req, res) => {
+  try {
+    const { topic } = req.body;
+    if (!topic) {
+      return res.status(400).json({ error: "Topic is required" });
+    }
+
+    // AI generates study content
+    const { studyNotes, resources, quiz } = await generateStudyGuide(topic);
+
+    // Create response object
+    const guide = {
+      topic,
+      studyNotes,
+      resources,
+      quiz
+    };
+
+    // If user is authenticated, save to database
+    if (req.userId) {
+      const studyGuide = new StudyGuide(
+        req.userId,
+        topic,
+        studyNotes,
+        resources,
+        quiz
+      );
+
+      const db = await connectToDatabase();
+      const studyGuidesCollection = db.collection('StudyGuides');
+      await studyGuidesCollection.insertOne(studyGuide);
+    }
+
+    res.json({ 
+      message: "Study guide generated", 
+      guide
+    });
+
+  } catch (error) {
+    console.error("Study Guide Error:", error);
+    res.status(500).json({ error: error.message || "Error generating study guide" });
+  }
+});
 
 
 router.get('/chat-history', async (req, res) => {
@@ -231,8 +318,105 @@ router.post('/sendEmail', async (req, res) => {
       res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
       res.status(500).json({ error: 'Error sending email. Try Again' });
-    //   console.log("Mail Error:", error);
+      console.log("Mail Error:", error);
     }
   });
+
+  // Add these new routes after existing ones
+
+// Get analysis history
+router.get('/analysis-history', authenticateOptional, async (req, res) => {
+    try {
+        if (!req.userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        const db = await connectToDatabase();
+        const documentsCollection = db.collection('Documents');
+        const history = await documentsCollection
+            .find({ userId: new ObjectId(req.userId) })
+            .sort({ createdAt: -1 })
+            .toArray();
+
+        res.json(history);
+    } catch (error) {
+        console.error('Analysis History Error:', error);
+        res.status(500).json({ error: 'Failed to fetch analysis history' });
+    }
+});
+
+// Delete analysis
+router.delete('/delete-analysis/:analysisId', authenticateOptional, async (req, res) => {
+    try {
+        if (!req.userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        const db = await connectToDatabase();
+        const documentsCollection = db.collection('Documents');
+        
+        const result = await documentsCollection.deleteOne({
+            _id: new ObjectId(req.params.analysisId),
+            userId: new ObjectId(req.userId)
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Analysis not found' });
+        }
+
+        res.json({ message: 'Analysis deleted successfully' });
+    } catch (error) {
+        console.error('Delete Analysis Error:', error);
+        res.status(500).json({ error: 'Failed to delete analysis' });
+    }
+});
+
+// Get study guide history
+router.get('/study-guide-history', authenticateOptional, async (req, res) => {
+    try {
+        if (!req.userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        const db = await connectToDatabase();
+        const studyGuidesCollection = db.collection('StudyGuides');
+        const history = await studyGuidesCollection
+            .find({ userId: new ObjectId(req.userId) })
+            .sort({ createdAt: -1 })
+            .toArray();
+
+        res.json(history);
+    } catch (error) {
+        console.error('Study Guide History Error:', error);
+        res.status(500).json({ error: 'Failed to fetch study guide history' });
+    }
+});
+
+// Delete study guide
+router.delete('/delete-guide/:guideId', authenticateOptional, async (req, res) => {
+    try {
+        if (!req.userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        const db = await connectToDatabase();
+        const studyGuidesCollection = db.collection('StudyGuides');
+        
+        const result = await studyGuidesCollection.deleteOne({
+            _id: new ObjectId(req.params.guideId),
+            userId: new ObjectId(req.userId)
+        });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Study guide not found' });
+        }
+
+        res.json({ message: 'Study guide deleted successfully' });
+    } catch (error) {
+        console.error('Delete Study Guide Error:', error);
+        res.status(500).json({ error: 'Failed to delete study guide' });
+    }
+});
+
 
 module.exports = router;

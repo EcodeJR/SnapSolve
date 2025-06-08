@@ -2,7 +2,7 @@
   "name": "snapsolve",
   "version": "1.0.0",
   "description": "SnapSolve is an app built on google's generative AI, It's purpose is to help people(must espacially students) get solutions to mathematical/scientific equations.",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "test"
   },

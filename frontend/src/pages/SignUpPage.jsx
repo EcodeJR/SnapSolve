@@ -10,9 +10,9 @@ import { GoEyeClosed } from "react-icons/go";
 //others
 import { NavLink } from 'react-router-dom';
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { auth } from '../utils/api';
 
 const SignUpPage = () => {
     const [firstname, setFirstname] = useState("");
@@ -26,113 +26,196 @@ const SignUpPage = () => {
     const [status, setStatus] = useState();
     const navigate = useNavigate();
 
+
+
     const handleSignUp = async (e) => {
         e.preventDefault();
         setLoading(true);
-      
-        // Clear cookies and localStorage
-        if (Cookies.get('token') || Cookies.get('username')) {
-          Cookies.remove('token', { path: '/', sameSite: 'Strict' });
-          Cookies.remove('username', { path: '/', sameSite: 'Strict' });
-        }
-      
+
         try {
-          const response = await axios.post("https://snap-solve-nine.vercel.app/auth/signup", {
-            firstname,
-            lastname,
-            username,
-            email,
-            password
-          });
-      
-          // Check if a token is returned
-          if (response.data.token) {
-            setStatus(response.status);
-            setMessage(response.data.message);
-      
-            // Set cookies and localStorage
-            Cookies.set('token', response.data.token, { expires: 3,  sameSite: 'Strict' });
-            Cookies.set('username', response.data.userName, { expires: 3,  sameSite: 'Strict' });
-            // Clear form fields
-            setFirstname("");
-            setLastname("");
-            setUsername("");
-            setEmail("");
-            setPassword("");
-      
-            // Redirect to dashboard
-            navigate('/dashboard', { replace: true });
-          } else {
-            setStatus(response.status);
-            setMessage("Sign up Failed");
-          }
+            const data = await auth.signup({
+                firstname,
+                lastname,
+                username,
+                email,
+                password
+            });
+
+            if (data.token) {
+                setStatus(200);
+                setMessage(data.message);
+                Cookies.set('token', data.token, { expires: 3, sameSite: 'Strict' });
+                Cookies.set('username', data.userName, { expires: 3, sameSite: 'Strict' });
+                navigate('/dashboard', { replace: true });
+            }
         } catch (err) {
-          setStatus(err.response ? err.response.status : 500);
-          setMessage(err.response ? err.response.data.message : "Something went wrong");
+            setStatus(err.response?.status);
+            setMessage(err.response?.data?.message || 'Sign Up Failed');
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
+    };
       
 
       const handleViewpwd = () => {
         setViewpwd(!viewpwd);
       }
 
-    return ( 
-        <section className='w-full h-fit lg:h-screen flex flex-col lg:flex-row items-center justify-evenly bg-whiteMain'>
-            <div className='w-full lg:w-[50%] h-[40vh] lg:h-full p-10 rounded-lg overflow-hidden relative'>
-                <img src={sign_img} alt="Forest" className='top-0 absolute left-0 w-[100%] h-[100%] object-cover z-0' />
-                <div className='w-full h-full absolute top-0 left-0 z-10'>
-                    <div className='w-full p-5 flex items-center justify-between'>
-                        <div className='flex items-center justify-center'>
-                            <img src={logo} alt="Snapsolves's Logo." className='w-[40px] md:w-[50px] lg:w-[50px]' />
-                            <NavLink to='/' className='font-extrabold text-lg md:text-xl lg:text-2xl text-whiteMain'>SnapSolve</NavLink>
-                        </div>
-                        <NavLink to='/signin' className="text-whiteMain border-[2px] border-whiteMain uppercase font-bold text-base px-7 py-3 rounded-md">Sign In</NavLink>
+return (
+    <section className='w-full min-h-screen flex flex-col lg:flex-row bg-white'>
+        {/* Left Section - Image */}    
+        <div className='w-full lg:w-[50%] h-[40vh] lg:min-h-screen lg:sticky lg:top-0 relative overflow-hidden'>
+            <img 
+                src={sign_img} 
+                alt="Forest" 
+                className='absolute inset-0 w-full h-full object-cover transform scale-105 filter brightness-[0.85] transition-transform duration-700 hover:scale-110' 
+            />
+            <div className='absolute inset-0 bg-gradient-to-b from-black/50 to-transparent'>
+                <div className='w-full p-6 flex items-center justify-between'>
+                    <div className='flex items-center space-x-3 group'>
+                        <img src={logo} alt="Snapsolves's Logo." className='w-12 h-12 object-contain transform group-hover:scale-110 transition-transform duration-300' />
+                        <NavLink to='/' className='font-extrabold text-xl lg:text-2xl text-white drop-shadow-lg'>
+                            SnapSolve
+                        </NavLink>
                     </div>
+                    <NavLink 
+                        to='/signin' 
+                        className="text-white border-2 border-white/80 px-6 py-2.5 rounded-lg
+                        hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-sm
+                        font-semibold text-sm tracking-wide uppercase"
+                    >
+                        Sign In
+                    </NavLink>
                 </div>
             </div>
-            <div className='w-full lg:w-[50%] h-fit lg:h-full flex flex-col items-center justify-between p-5'>
-                <h2 className='font-bold text-4xl lg:text-5xl'>Sign Up</h2>
-                <div className='w-full h-full flex flex-col items-center justify-center'>
-                    <h4 className='text-2xl md:text-3xl text-center font-bold my-2'>
+        </div>
+
+        {/* Right Section - Form */}
+        <div className='w-full lg:w-[50%] p-8 lg:p-16 flex flex-col'>
+            <div className='max-w-md mx-auto w-full flex-1 flex flex-col justify-center'>
+                <h2 className='font-bold text-4xl lg:text-5xl mb-2 text-black'>Sign Up</h2>
+                <h4 className='text-2xl font-bold text-black/80 mt-8 mb-2'>
                     Hey there, Explorer!
-                    </h4>
-                    <p className='text-blackMain/60 text-center text-base mb-3'>Welcome to SnapSolve, Let’s make today legendary</p>
-                    <form onSubmit={handleSignUp} className='w-full flex flex-col items-center justify-center'>
-                    <input type="text" id="Firstname" name="firstname" placeholder='Firstname' value={firstname}
-          onChange={(e) => setFirstname(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
-          <input type="text" id="Lastname" name="lastname" placeholder='Lastname' value={lastname}
-          onChange={(e) => setLastname(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
-                        <input type="text" id="name" name="name" placeholder='Username' value={username}
-          onChange={(e) => setUsername(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
-                        <input type="email" id="email" name="email" placeholder='Email' value={email}
-          onChange={(e) => setEmail(e.target.value)} className='w-[90%] lg:w-[70%] p-2 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
-          <div className='w-[90%] lg:w-[70%] border-[1px] border-blackMain/70 rounded-md flex items-center justify-around my-2'>
-            <input type={viewpwd ? "text" : "password"} 
-            id="password" name="password" placeholder='Password' 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} 
-            className='w-full h-full p-2 text-base rounded-md outline-none' required />
-                {viewpwd ? <GoEyeClosed onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' /> : <GoEye onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' />}
-          </div>
-                        
-                    <button type="submit" disabled={loading} className={`w-[90%] lg:w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain cursor-pointer'} text-whiteMain rounded-md hover:shadow-2xl outline-none`}>{loading ? <div className='w-full h-fit flex items-center justify-center text-xl'><span className="w-[30px] h-[30px] rounded-full bg-transparent border-[2px] border-whiteMain border-dashed animate-spin duration-75 mx-2"></span>Loading</div>  : <div className='w-full h-fit flex items-center justify-center text-lg uppercase font-semibold'>Sign up</div>}</button>
-                    
-                    </form>
-                    {status == 200 ? <p className='text-base font-bold text-greenMain mt-3'>{message}</p> : <p className='text-base font-bold text-redMain mt-3'>{message}</p>}
-                    <div className='flex items-center justify-center mt-7'>
-                    <a href="https://www.facebook.com/emmanuel.dalyop.96/" target="_blank"><FaFacebook className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
-                      <a href="https://wa.me/+23451242451" target="_blank"><FaSquareWhatsapp className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
-                      <a href="https://x.com/EcodeJR" target="_blank"><FaSquareXTwitter className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
-                      <a href="https://www.linkedin.com/in/emmanuel-dalyop-5b6a1b178/" target="_blank"><FaLinkedin className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
+                </h4>
+                <p className='text-black/60 text-lg mb-8'>Welcome to SnapSolve, Let`s make today legendary</p>
+
+                <form onSubmit={handleSignUp} className='space-y-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                        <input 
+                            type="text" 
+                            placeholder='First Name' 
+                            value={firstname}
+                            onChange={(e) => setFirstname(e.target.value)}
+                            className='w-full p-4 text-base border border-black/20 rounded-xl outline-none
+                            focus:border-black transition-colors duration-300 bg-black/5'
+                            required 
+                        />
+                        <input 
+                            type="text" 
+                            placeholder='Last Name' 
+                            value={lastname}
+                            onChange={(e) => setLastname(e.target.value)}
+                            className='w-full p-4 text-base border border-black/20 rounded-xl outline-none
+                            focus:border-black transition-colors duration-300 bg-black/5'
+                            required 
+                        />
+                    </div>
+
+                    <input 
+                        type="text" 
+                        placeholder='Username' 
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className='w-full p-4 text-base border border-black/20 rounded-xl outline-none
+                        focus:border-black transition-colors duration-300 bg-black/5'
+                        required 
+                    />
+
+                    <input 
+                        type="email" 
+                        placeholder='Email' 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className='w-full p-4 text-base border border-black/20 rounded-xl outline-none
+                        focus:border-black transition-colors duration-300 bg-black/5'
+                        required 
+                    />
+
+                    <div className='relative'>
+                        <input 
+                            type={viewpwd ? "text" : "password"}
+                            placeholder='Password'
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className='w-full p-4 text-base border border-black/20 rounded-xl outline-none
+                            focus:border-black transition-colors duration-300 bg-black/5 pr-12'
+                            required 
+                        />
+                        <button 
+                            type="button"
+                            onClick={handleViewpwd}
+                            className='absolute right-4 top-1/2 -translate-y-1/2 text-black/50 hover:text-black transition-colors duration-300'
+                        >
+                            {viewpwd ? 
+                                <GoEyeClosed className='text-2xl' /> : 
+                                <GoEye className='text-2xl' />
+                            }
+                        </button>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        disabled={loading} 
+                        className={`w-full p-4 rounded-xl text-white font-semibold transition-all duration-300
+                            ${loading ? 
+                                'bg-black/20 cursor-not-allowed' : 
+                                'bg-black hover:bg-black/90 hover:shadow-lg transform hover:scale-[1.02]'
+                            }`}
+                    >
+                        {loading ? (
+                            <div className='flex items-center justify-center space-x-2'>
+                                <span className="w-6 h-6 rounded-full border-2 border-white/80 border-t-transparent animate-spin"></span>
+                                <span>Creating account...</span>
+                            </div>
+                        ) : (
+                            <span className='uppercase tracking-wide'>Sign up</span>
+                        )}
+                    </button>
+                </form>
+
+                {message && (
+                    <div className={`mt-4 p-4 rounded-lg text-center ${
+                        status === 200 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+                    }`}>
+                        <p className="text-sm font-medium">{message}</p>
+                    </div>
+                )}
+
+                <div className='flex flex-col items-center mt-8 space-y-4'>
+                    <p className='text-black/60'>Or connect on</p>
+                    <div className='flex items-center justify-center space-x-6'>
+                        {[
+                            { Icon: FaFacebook, href: "https://www.facebook.com/emmanuel.dalyop.96/" },
+                            { Icon: FaSquareWhatsapp, href: "https://wa.me/+23451242451" },
+                            { Icon: FaSquareXTwitter, href: "https://x.com/EcodeJR" },
+                            { Icon: FaLinkedin, href: "https://www.linkedin.com/in/emmanuel-dalyop-5b6a1b178/" }
+                        ].map((social, index) => (
+                            <a 
+                                key={index}
+                                href={social.href} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className='text-black/60 hover:text-black transition-all duration-300 transform hover:scale-110'
+                            >
+                                <social.Icon className='text-2xl' />
+                            </a>
+                        ))}
                     </div>
                 </div>
-                
             </div>
-        </section>
-     );
+        </div>
+    </section>
+);
 }
  
 export default SignUpPage;

@@ -1,131 +1,161 @@
-import Navigation from '../components/Navigation';
-import Footer from "../components/Footer";
-import { useEffect } from 'react';
+import PolicyLayout from '../components/PolicyLayout';
+import PropTypes from 'prop-types';
 
+const PolicySection = ({ title, children }) => (
+    <div className="flex flex-col lg:flex-row items-start justify-between gap-8 group">
+        <h3 className="w-full lg:w-[40%] text-xl lg:text-2xl font-bold uppercase text-gray-800 group-hover:text-purpleMain transition-colors duration-300">
+            {title}
+        </h3>
+        <div className="w-full lg:w-[60%]">
+            {children}
+        </div>
+    </div>
+);
 
 const PrivacyPolicy = () => {
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+    return (
+        <PolicyLayout 
+            title="Privacy Policies"
+            subtitle="At SnapSolve, we are committed to protecting your privacy and ensuring the security of your information. This Privacy Policy outlines how we collect, use, and protect the data you provide when using SnapSolve."
+        >
+            <PolicySection title="1. Information We Collect">
+                <ul className="space-y-4 list-none">
+                    {[
+                        {
+                            title: "Uploaded Content",
+                            content: "When you upload images of equations or mathematical problems, SnapSolve collects these images solely to process and provide accurate solutions."
+                        },
+                        {
+                            title: "Usage Data",
+                            content: "We may collect information on how you use SnapSolve, including page views, clicks, and interaction data. This helps us improve our app and deliver a better user experience."
+                        },
+                        {
+                            title: "Account Information",
+                            content: "When you create an account, we collect basic information such as your email address and username to provide you with personalized services."
+                        },
+                        {
+                            title: "Device Information",
+                            content: "We collect information about the device and browser you use to access SnapSolve, including IP address, browser type, and operating system."
+                        }
+                    ].map((item, index) => (
+                        <li key={index} className="pl-4 border-l-2 border-purpleMain hover:border-l-4 transition-all duration-300">
+                            <h4 className="font-semibold text-lg text-gray-800 mb-2">{item.title}</h4>
+                            <p className="text-gray-600 leading-relaxed">{item.content}</p>
+                        </li>
+                    ))}
+                </ul>
+            </PolicySection>
 
-    return ( 
-        <section className="w-full min-h-screen">
-            <Navigation />
-            <div className='w-full h-full p-6'>
-                <h2 className="font-bold text-3xl md:text-5xl lg:text-7xl uppercase font-[Montserrat] tracking-wider">Privacy <br /> Policies</h2>
-                {/* <p className='text-base italic opacity-40'>Effective Date: 01/11/2024</p> */}
-                <p className='text-lg my-3 w-full md:w-[70%] text-justify'>At SnapSolve, we are committed to protecting your privacy and ensuring the security of your information. This Privacy Policy outlines how we collect, use, and protect the data you provide when using SnapSolve, including the uploading of images for AI-driven problem-solving.</p>
-                <div>
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>1. Information We Collect</h3>
-                        <ul className='w-full lg:w-[50%] list-disc'>
-                            <li className='text-lg font-normal text-justify'>
-                                <p className='font-bold'>Uploaded Content:</p>
-                                When you upload images of equations or mathematical problems, SnapSolve collects these images solely to process and provide accurate solutions.
-                            </li>
-                            <li className='text-lg font-normal text-justify'>
-                                <p className='font-bold'>Usage Data:</p>
-                                We may collect information on how you use SnapSolve, including page views, clicks, and interaction data. This data helps us improve our app and deliver a better user experience.
-                                Device and Log Information: We may collect technical details about your device, browser, and IP address to enhance security and optimize app functionality.
-                            </li>
-                        </ul>
-                    </div>
+            <PolicySection title="2. How We Use Your Information">
+                <ul className="space-y-4 list-none">
+                    {[
+                        {
+                            title: "Service Provision",
+                            content: "We use your information to provide and improve our services, process your requests, and enhance your user experience."
+                        },
+                        {
+                            title: "Communication",
+                            content: "We may use your email address to send important updates about SnapSolve, respond to your inquiries, or provide support."
+                        },
+                        {
+                            title: "Analytics",
+                            content: "We analyze usage patterns to improve our services, fix bugs, and develop new features that better serve our users."
+                        },
+                        {
+                            title: "Security",
+                            content: "Your information helps us detect and prevent fraud, abuse, and security breaches on our platform."
+                        }
+                    ].map((item, index) => (
+                        <li key={index} className="pl-4 border-l-2 border-purpleMain hover:border-l-4 transition-all duration-300">
+                            <h4 className="font-semibold text-lg text-gray-800 mb-2">{item.title}</h4>
+                            <p className="text-gray-600 leading-relaxed">{item.content}</p>
+                        </li>
+                    ))}
+                </ul>
+            </PolicySection>
 
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>2. How We Use Your Information</h3>
-                        <ul className='w-full lg:w-[50%] list-disc'>
-                            <li className='text-lg font-normal text-justify'>
-                                <p className='font-bold'>Service Delivery:</p>
-                                The images and data you upload are used solely for the purpose of analyzing and solving the equations or problems you submit. We do not use your content for any other purpose without your consent.
-                            </li>
-                            <li className='text-lg font-normal text-justify'>
-                                <p className='font-bold'>Improvement of Services:</p>
-                                SnapSolve may use aggregated data to improve our AI models, enhance features, and develop new services. This data is anonymized and cannot be traced back to individual users.
-                            </li>
-                            <li className='text-lg font-normal text-justify'>
-                                <p className='font-bold'>Communication:</p>
-                                We may use your contact information, if provided, to send important updates about SnapSolve, such as changes to this policy, security updates, and feature announcements.
-                            </li>
-                        </ul>
-                    </div>
+            <PolicySection title="3. Data Protection">
+                <ul className="space-y-4 list-none">
+                    {[
+                        {
+                            title: "Security Measures",
+                            content: "We implement industry-standard security measures to protect your data from unauthorized access, disclosure, or misuse."
+                        },
+                        {
+                            title: "Data Retention",
+                            content: "We retain your data only for as long as necessary to provide our services and comply with legal obligations."
+                        },
+                        {
+                            title: "Third-Party Access",
+                            content: "We do not sell your personal information to third parties. Access to your data is strictly limited to authorized personnel."
+                        },
+                        {
+                            title: "User Control",
+                            content: "You can request access to, correction of, or deletion of your personal information at any time through your account settings."
+                        }
+                    ].map((item, index) => (
+                        <li key={index} className="pl-4 border-l-2 border-purpleMain hover:border-l-4 transition-all duration-300">
+                            <h4 className="font-semibold text-lg text-gray-800 mb-2">{item.title}</h4>
+                            <p className="text-gray-600 leading-relaxed">{item.content}</p>
+                        </li>
+                    ))}
+                </ul>
+            </PolicySection>
 
+            <PolicySection title="4. Updates to Privacy Policy">
+                <ul className="space-y-4 list-none">
+                    {[
+                        {
+                            title: "Policy Changes",
+                            content: "We may update this Privacy Policy periodically. We will notify you of any significant changes through email or app notifications."
+                        },
+                        {
+                            title: "User Consent",
+                            content: "Continued use of SnapSolve after changes to this policy constitutes acceptance of the updated terms."
+                        }
+                    ].map((item, index) => (
+                        <li key={index} className="pl-4 border-l-2 border-purpleMain hover:border-l-4 transition-all duration-300">
+                            <h4 className="font-semibold text-lg text-gray-800 mb-2">{item.title}</h4>
+                            <p className="text-gray-600 leading-relaxed">{item.content}</p>
+                        </li>
+                    ))}
+                </ul>
+            </PolicySection>
 
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>3. Data Security</h3>
-                        <div className='w-full lg:w-[50%]'>
-                            <p className='text-lg font-normal text-justify'>
-                                We implement industry-standard security measures to protect your information from unauthorized access, use, or disclosure. Uploaded images are securely stored and deleted after processing to prevent unauthorized access.
-                                Sensitive user data (like login credentials, if applicable) is encrypted and securely stored in accordance with data protection standards.
-                            </p>
-                        </div>
-                    </div>
+            <PolicySection title="Cookie Usage">
+                <ul className="space-y-4 list-none">
+                    {[
+                        {
+                            title: "Essential Cookies",
+                            content: "We use necessary cookies to make our website work. These cookies are required for basic functionality like authentication and security."
+                        },
+                        {
+                            title: "Preference Cookies",
+                            content: "These cookies allow us to remember your preferences (like dark mode) to provide you with a more personalized experience."
+                        },
+                        {
+                            title: "Analytics Cookies",
+                            content: "We use analytics cookies to understand how you interact with our website, helping us improve our services."
+                        },
+                        {
+                            title: "Your Control",
+                            content: "You can control and/or delete cookies as you wish. You can delete all cookies that are already on your computer and you can set most browsers to prevent them from being placed."
+                        }
+                    ].map((item, index) => (
+                        <li key={index} className="pl-4 border-l-2 border-purpleMain hover:border-l-4 transition-all duration-300">
+                                        <h4 className="font-semibold text-lg text-gray-800 mb-2">{item.title}</h4>
+                                        <p className="text-gray-600 leading-relaxed">{item.content}</p>
+                        </li>
+                    ))}
+                </ul>
+            </PolicySection>
+        </PolicyLayout>
+    );
+};
 
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>4. Third-Party Services</h3>
-                        <div className='w-full lg:w-[50%]'>
-                            <p className='text-lg font-normal text-justify'>
-                                SnapSolve may work with third-party services to enhance our AI capabilities. Any third-party partners will adhere to strict data handling and privacy guidelines, ensuring that your information remains secure.
-                            </p>
-                        </div>
-                    </div>
+PolicySection.propTypes = {
+    title: PropTypes.string.isRequired,
+    children: PropTypes.node.isRequired
+};
 
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>5. Your Rights and Choices</h3>
-                        <ul className='w-full lg:w-[50%] list-disc'>
-                            <li className='text-lg font-normal text-justify'>
-                                <p className='font-bold'>Data Access and Deletion:</p>
-                                You have the right to access, update, or request deletion of any personal information SnapSolve may store about you.
-                            </li>
-                            <li className='text-lg font-normal text-justify'>
-                                <p className='font-bold'>Opt-Out Options:</p>
-                                You may limit certain types of data collection by adjusting your device or app settings or by contacting us directly.
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>6. Data Retention</h3>
-                        <div className='w-full lg:w-[50%]'>
-                            <p className='text-lg font-normal text-justify'>
-                                SnapSolve retains personal information only as long as needed to fulfill the purposes outlined in this Privacy Policy, such as providing you with solutions to your submitted problems. Uploaded content (like images) is deleted shortly after processing.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>7. Children’s Privacy</h3>
-                        <div className='w-full lg:w-[50%]'>
-                            <p className='text-lg font-normal text-justify'>
-                                SnapSolve is not intended for users under the age of 13. We do not knowingly collect or store personal information from children under 13 without parental consent. If we become aware of such data, we will promptly delete it.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>8. Policy Updates</h3>
-                        <div className='w-full lg:w-[50%]'>
-                            <p className='text-lg font-normal text-justify'>
-                                SnapSolve may update this Privacy Policy periodically to reflect changes in our practices or legal requirements. Users will be notified of any significant changes through the app or by email.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className='w-full my-7 flex flex-col lg:flex-row items-start justify-start'>
-                        <h3 className='w-full lg:w-[40vw] text-xl lg:text-2xl font-bold uppercase'>9. Contact Us</h3>
-                        <div className='w-full lg:w-[50%]'>
-                            <p className='text-lg font-semibold text-justify'>
-                                For questions or concerns about this Privacy Policy or how your data is handled, please reach out to us: <a className='text-blueMain font-bold' href="mailto:emmanueldcode@gmail.com">emmanueldcode@gmail.com</a>.
-                            </p>
-                        </div>
-                    </div>
-
-
-                </div>
-                
-            </div>
-            <Footer />
-        </section>
-     );
-}
- 
 export default PrivacyPolicy;

@@ -10,9 +10,9 @@ import { GoEyeClosed } from "react-icons/go";
 //others
 import { NavLink } from 'react-router-dom';
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { auth } from '../utils/api';
 
 const SignInPage = () => {
     const [email, setEmail] = useState("");
@@ -23,92 +23,176 @@ const SignInPage = () => {
     const [status, setStatus] = useState();
     const navigate = useNavigate();
 
+
+
     const handleSignIn = async (e) => {
         e.preventDefault();
         setLoading(true);
-        if (Cookies.get('token') || Cookies.get('username')) {
-          Cookies.remove('token', { path: '/', secure: true, sameSite: 'Strict' });
-          Cookies.remove('username', { path: '/', secure: true, sameSite: 'Strict' });
-        }
-    
 
         try {
-          const response = await axios.post("https://snap-solve-nine.vercel.app/auth/signin", {
-            email,
-            password,
-          });
-          if (response.data.token) {
-            Cookies.set('token', response.data.token, { expires: 3 });
-            Cookies.set('username', response.data.userName, { expires: 3 });
-            setStatus(response.status);
-            setMessage("Sign In Successful!");
-            setEmail("");
-            setPassword("");
-            navigate('/dashboard', { replace: true });
-          } else {
-          setStatus(response.status);
-            setMessage("Sign In Failed");
-          }
+            const data = await auth.signin({ email, password });
+            
+            if (data.token) {
+                Cookies.set('token', data.token, { expires: 3 });
+                Cookies.set('username', data.userName, { expires: 3 });
+                setStatus(200);
+                setMessage("Sign In Successful!");
+                setEmail("");
+                setPassword("");
+                navigate('/dashboard', { replace: true });
+            }
         } catch (err) {
-          setStatus(err.status);
-          setMessage(err.response.data.message);
+            setStatus(err.response?.status);
+            setMessage(err.response?.data?.message || 'Sign In Failed');
         } finally {
             setLoading(false);
         }
-      };
+    };
 
 
       const handleViewpwd = () => {
         setViewpwd(!viewpwd);
       }
 
-    return ( 
-        <section className='w-full h-fit lg:h-screen flex flex-col lg:flex-row items-center justify-evenly bg-whiteMain'>
-            <div className='w-full lg:w-[50%] h-[40vh] lg:h-full p-10 rounded-lg overflow-hidden relative'>
-                <img src={sign_img} alt="Forest" className='top-0 absolute left-0 w-[100%] h-[100%] object-cover z-0' />
-                <div className='w-full h-full absolute top-0 left-0 z-10'>
-                    <div className='w-full p-5 flex items-center justify-between'>
-                        <div className='flex items-center justify-center'>
-                            <img src={logo} alt="Snapsolves's Logo." className='w-[40px] md:w-[50px] lg:w-[50px]' />
-                            <NavLink to='/' className='font-extrabold text-lg md:text-xl lg:text-2xl text-whiteMain'>SnapSolve</NavLink>
-                        </div>
-                        <NavLink to='/signup' className="text-whiteMain border-[2px] border-whiteMain uppercase font-bold text-base px-7 py-3 rounded-lg">Sign Up</NavLink>
+return ( 
+    <section className='w-full min-h-screen flex flex-col lg:flex-row bg-whiteMain'>
+        {/* Left Section - Image */}
+        <div className='w-full lg:w-[50%] h-[40vh] lg:h-screen relative overflow-hidden'>
+            <img 
+                src={sign_img} 
+                alt="Forest" 
+                className='absolute inset-0 w-full h-full object-cover transform scale-105 filter brightness-[0.85]' 
+            />
+            <div className='absolute inset-0 bg-gradient-to-b from-black/30 to-transparent'>
+                <div className='w-full p-6 flex items-center justify-between'>
+                    <div className='flex items-center space-x-3'>
+                        <img src={logo} alt="Snapsolves's Logo." className='w-12 h-12 object-contain' />
+                        <NavLink to='/' className='font-extrabold text-xl lg:text-2xl text-white drop-shadow-md'>
+                            SnapSolve
+                        </NavLink>
                     </div>
+                    <NavLink 
+                        to='/signup' 
+                        className="text-white border-2 border-white/80 px-6 py-2.5 rounded-lg
+                        hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-sm
+                        font-semibold text-sm tracking-wide uppercase"
+                    >
+                        Sign Up
+                    </NavLink>
                 </div>
             </div>
-            <div className='w-full lg:w-[50%] h-[50vh] lg:h-full flex flex-col items-center justify-between p-5'>
-                <h2 className='font-bold text-4xl lg:text-5xl'>Sign In</h2>
-                <div className='w-full h-full flex flex-col items-center justify-center'>
-                    <h4 className='text-2xl md:text-3xl text-center font-bold my-2'>
+        </div>
+
+        {/* Right Section - Form */}
+        <div className='w-full lg:w-[50%] min-h-[60vh] lg:h-screen flex flex-col p-8 lg:p-16'>
+            <div className='flex-1 flex flex-col justify-center max-w-md mx-auto w-full'>
+                <h2 className='font-bold text-4xl lg:text-5xl mb-2'>Sign In</h2>
+                <h4 className='text-2xl font-bold text-black/80 mt-8 mb-2'>
                     Hey there, Explorer!
-                    </h4>
-                    <p className='text-blackMain/60 text-center text-base mb-3'>Welcome back, Let’s make today legendary</p>
-                    <form onSubmit={handleSignIn} className='w-full flex flex-col items-center justify-center'>
-                        <input type="email" id="email" name="email" placeholder='Email' value={email}
-          onChange={(e) => setEmail(e.target.value)} className='w-[90%] lg:w-[70%] p-3 my-2 text-base border-[1px] border-blackMain/70 rounded-md outline-none' required />
-                        <div className='w-[90%] lg:w-[70%] border-[1px] border-blackMain/70 rounded-md flex items-center justify-around my-2'>
-                            <input type={viewpwd ? "text" : "password"} 
-                            id="password" name="password" placeholder='Password' 
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)} 
-                            className='w-full h-full p-3 text-base rounded-md outline-none' required />
-                                {viewpwd ? <GoEyeClosed onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' /> : <GoEye onClick={handleViewpwd} className='text-2xl mx-2 cursor-pointer' />}
-                </div>
-                        <button type="submit" disabled={loading} className={`w-[90%] lg:w-[70%] p-3 text-base ${loading ? 'bg-purpleMain/20 hover:shadow-none cursor-not-allowed' : 'bg-purpleMain cursor-pointer'} text-whiteMain rounded-md hover:shadow-2xl outline-none`}>{loading ? <div className='w-full h-fit flex items-center justify-center text-xl'><span className="w-[30px] h-[30px] rounded-full bg-transparent border-[2px] border-whiteMain border-dashed animate-spin duration-75 mx-2"></span>Loading</div>  : <div className='w-full h-fit flex items-center justify-center text-lg uppercase font-semibold'>Sign in</div>}</button>
-                    </form>
-                    {status == 200 ? <p className='text-base font-bold text-greenMain mt-3'>{message}</p> : <p className='text-base font-bold text-redMain mt-3'>{message}</p>}
-                    
-                    <div className='flex items-center justify-center mt-7'>
-                      <a href="https://www.facebook.com/emmanuel.dalyop.96/" target="_blank"><FaFacebook className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
-                      <a href="https://wa.me/+23451242451" target="_blank"><FaSquareWhatsapp className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
-                      <a href="https://x.com/EcodeJR" target="_blank"><FaSquareXTwitter className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
-                      <a href="https://www.linkedin.com/in/emmanuel-dalyop-5b6a1b178/" target="_blank"><FaLinkedin className='text-3xl cursor-pointer text-blackMain mx-2' /></a>
+                </h4>
+                <p className='text-black/60 text-lg mb-8'>Welcome back, Let`s make today legendary</p>
+
+                <form onSubmit={handleSignIn} className='space-y-4'>
+                    <div className='space-y-2'>
+                        <input 
+                            type="email" 
+                            placeholder='Email' 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className='w-full p-4 text-base border border-black/20 rounded-xl outline-none
+                            focus:border-black/40 transition-colors duration-300 bg-black/5'
+                            required 
+                        />
                     </div>
+
+                    <div className='relative'>
+                        <input 
+                            type={viewpwd ? "text" : "password"}
+                            placeholder='Password'
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className='w-full p-4 text-base border border-black/20 rounded-xl outline-none
+                            focus:border-black/40 transition-colors duration-300 bg-black/5 pr-12'
+                            required 
+                        />
+                        <button 
+                            type="button"
+                            onClick={handleViewpwd}
+                            className='absolute right-4 top-1/2 -translate-y-1/2 text-black/50 hover:text-black transition-colors duration-300'
+                        >
+                            {viewpwd ? 
+                                <GoEyeClosed className='text-2xl' /> : 
+                                <GoEye className='text-2xl' />
+                            }
+                        </button>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        disabled={loading} 
+                        className={`w-full p-4 rounded-xl text-white font-semibold
+                            ${loading ? 
+                                'bg-black/20 cursor-not-allowed' : 
+                                'bg-black hover:bg-black/90 transition-all duration-300'
+                            }`}
+                    >
+                        {loading ? (
+                            <div className='flex items-center justify-center space-x-2'>
+                                <span className="w-6 h-6 rounded-full border-2 border-white/80 border-t-transparent animate-spin"></span>
+                                <span>Signing in...</span>
+                            </div>
+                        ) : (
+                            <span className='uppercase tracking-wide'>Sign in</span>
+                        )}
+                    </button>
+                    <div className="mx-auto flex justify-center items-center">
+                        <NavLink 
+                            to="/forgot-password"
+                            className="text-blue-500 hover:text-blue-600 transition-colors"
+                        >
+                            Forgot Password?
+                        </NavLink>
+                    </div>
+                </form>
+
+                {message && (
+                    <p className={`text-base font-medium mt-4 text-center
+                        ${status === 200 ? 'text-green-600' : 'text-red-600'}`}>
+                        {message}
+                    </p>
+                )}
+                <p className={`text-base font-medium mt-4 text-center text-blackMain`}>
+                        Don`t have an account? 
+                        <NavLink 
+                        to='/signup' 
+                        className="text-green-500 tracking-wide uppercase mx-2"
+                    >
+                         Sign Up
+                    </NavLink>
+                    </p>
+
+                <div className='flex items-center justify-center space-x-4 mt-8'>
+                    {[
+                        { Icon: FaFacebook, href: "https://www.facebook.com/emmanuel.dalyop.96/" },
+                        { Icon: FaSquareWhatsapp, href: "https://wa.me/+23451242451" },
+                        { Icon: FaSquareXTwitter, href: "https://x.com/EcodeJR" },
+                        { Icon: FaLinkedin, href: "https://www.linkedin.com/in/emmanuel-dalyop-5b6a1b178/" }
+                    ].map((social, index) => (
+                        <a 
+                            key={index}
+                            href={social.href} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className='text-black/70 hover:text-black transition-colors duration-300'
+                        >
+                            <social.Icon className='text-2xl' />
+                        </a>
+                    ))}
                 </div>
-                
             </div>
-        </section>
-     );
+        </div>
+    </section>
+);
 }
  
 export default SignInPage;

@@ -32,20 +32,47 @@ const Home = () => {
         window.scrollTo(0, 0);
     }, []);
     
+
     return(
-        <section className="w-full h-fit overflow-x-hidden text-blackMain ">
-            <Navigation />
-            <div className="w-full h-fit py-5 lg:h-screen flex items-center justify-center flex-col">
-                <div className="relative my-12 py-2 lg:my-0 lg:py-3">
-                    <p className="font-bold text-xs lg:text-base bg-yellowMain rounded-full px-2 py-2 absolute -top-10 right-10 lg:-top-20 lg:right-10 text-whiteMain w-28 text-center rotate-12 animate-wiggle">AI</p>
-                    <p className="font-bold text-xs lg:text-base bg-orangeMain rounded-full px-2 py-2 absolute -bottom-10 left-5 lg:-bottom-20 lg:left-10 text-whiteMain w-28 text-center rotate-12 animate-wiggle">LEARNING</p>
-                    <p className="font-bold text-xs lg:text-base bg-petchMain rounded-full px-2 py-2 absolute -top-10 left-10 lg:-top-20 lg:left-10 text-whiteMain w-28 text-center -rotate-12 animate-wiggle">AUTOMATE</p>
-                    <p className="font-bold text-xs lg:text-base bg-blueMain rounded-full px-2 py-2 absolute -bottom-10 right-5 lg:-bottom-20 lg:right-10 text-whiteMain w-28 text-center -rotate-12 animate-wiggle">GROWTH</p>
-                    <h1 className="font-bold text-4xl md:text-5xl lg:text-7xl font-[Montserrat] text-center uppercase" ref={heroText}>Get Instant AI-Powered <span className="text-petchMain">Solutions</span> to All Your <span className="text-purpleMain">Challenges!</span></h1>
-                </div>
-                <p className="font-medium text-base md:text-lg lg:text-xl text-blackMain/85 font-[Montserrat Alternates] text-center mt-10 lg:mt-0 lg:my-5">SnapSolve AI lets you learn fast and find solutions in a snap, <br /> freeing you up to tackle what matters most!</p>
-                <NavLink to="/dashboard" className="text-xl font-semibold my-2 py-3 px-10 hover:shadow-2xl bg-purpleMain text-whiteMain rounded flex items-center justify-center uppercase">Try For Free</NavLink>
+        <section className="w-full min-h-screen overflow-x-hidden text-blackMain">
+        <Navigation />
+        <div className="w-full min-h-screen py-5 flex items-center justify-center flex-col relative">
+            {/* Animated background elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+                <div className="absolute top-[20%] left-[10%] w-96 h-96 bg-purpleMain/40 rounded-full mix-blend-multiply filter blur-[64px] animate-blob"></div>
+                <div className="absolute top-[30%] right-[15%] w-96 h-96 bg-yellowMain/40 rounded-full mix-blend-multiply filter blur-[64px] animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-[20%] left-[30%] w-96 h-96 bg-petchMain/40 rounded-full mix-blend-multiply filter blur-[64px] animate-blob animation-delay-4000"></div>
             </div>
+
+            <div className="relative my-6 mx-3 py-2 lg:my-0 mt-0 lg:mt-14 lg:py-3 z-10">
+                <div className="glass-effect absolute -top-10 right-10 lg:-top-10 lg:right-10 px-4 py-2 rounded-xl rotate-12 animate-float backdrop-blur-md bg-whiteMain/30 border border-whiteMain/50">
+                    <span className="font-bold text-xs lg:text-base text-purpleMain">AI POWERED</span>
+                </div>
+                <div className="glass-effect absolute -top-10 left-10 lg:-top-10 lg:left-10 px-4 py-2 rounded-xl rotate-12 animate-float backdrop-blur-md bg-whiteMain/30 border border-whiteMain/50">
+                    <span className="font-bold text-xs lg:text-base text-petchMain">AI SOLUTIONS</span>
+                </div>
+
+                <h1 className="font-bold text-4xl md:text-5xl lg:text-7xl font-[Montserrat] text-center" ref={heroText}>
+                    Your Complete <span className="text-transparent bg-clip-text bg-gradient-to-r from-purpleMain to-petchMain">AI-Powered</span> Learning Assistant for <span className="text-transparent bg-clip-text bg-gradient-to-r from-purpleMain via-[#4830C0] to-[#7248FF]">Every Challenge!</span>
+                </h1>
+            </div>
+
+                <p className="font-medium text-base md:text-lg lg:text-xl text-blackMain/85 font-[Montserrat Alternates] text-center mx-12 lg:mt-0 lg:my-5 z-10">
+                    From text analysis to study guides, image recognition to instant answers - SnapSolve AI is your all-in-one learning companion that helps you learn smarter, not harder.
+                </p>
+
+                <NavLink to="/dashboard" className="relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-medium transition duration-300 ease-out border-2 border-black rounded-lg shadow-md group z-10 my-6">
+                    <span className="absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-black group-hover:translate-x-0 ease">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </span>
+                    <span className="absolute flex items-center justify-center w-full h-full text-black transition-all duration-300 transform group-hover:translate-x-full ease">Try For Free</span>
+                    <span className="relative invisible">Try For Free</span>
+                </NavLink>
+        </div>
+            
+            {/* Update other sections with glass-morphism and gradients */}
             <HowItWorks />
             <ThingsToKnow />
             <GetInTouch />
