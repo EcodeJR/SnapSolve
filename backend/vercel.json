@@ -22,24 +22,5 @@
         "NODE_ENV": "production",
         "FRONTEND_URL_DEV": "http://localhost:5173",
         "FRONTEND_URL_PROD": "https://snap-solve-ecodejr.vercel.app"
-    },
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "*"
-                },
-                {
-                    "key": "Access-Control-Allow-Methods",
-                    "value": "GET,POST,PUT,DELETE,OPTIONS"
-                },
-                {
-                    "key": "Access-Control-Allow-Headers",
-                    "value": "X-Requested-With,Content-Type,Authorization"
-                }
-            ]
-        }
-    ]
+    }
 }

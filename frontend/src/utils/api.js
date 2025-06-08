@@ -5,10 +5,11 @@ const BASE_URL = import.meta.env.VITE_NODE_ENV === 'production'
   ? import.meta.env.VITE_API_URL_PROD
   : import.meta.env.VITE_API_URL_DEV;
 const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    withCredentials: true // Add this for CORS
 });
 
 // Add request interceptor to add auth token
@@ -33,6 +34,20 @@ api.interceptors.request.use((config) => {
 //     return Promise.reject(error);
 //   }
 // );
+
+api.interceptors.response.use(
+    response => response,
+    error => {
+        console.error('API Error:', {
+            url: error.config?.url,
+            method: error.config?.method,
+            status: error.response?.status,
+            message: error.message
+        });
+        
+        return Promise.reject(error);
+    }
+);
 
 // Send Email API calls
 export const email = {

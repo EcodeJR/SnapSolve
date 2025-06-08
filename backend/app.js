@@ -14,7 +14,7 @@ app.use(express.json());
 const allowedOrigins = [
     process.env.FRONTEND_URL_DEV,
     process.env.FRONTEND_URL_PROD,
-    'https://snap-solve-ecodejr-fc5upq1vd-ecodejrs-projects.vercel.app'
+    'https://snap-solve-ecodejr.vercel.app'
 ].filter(Boolean);
 
 app.use(cors({
@@ -26,6 +26,8 @@ app.use(cors({
         }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 
