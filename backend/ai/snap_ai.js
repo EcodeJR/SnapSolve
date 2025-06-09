@@ -169,79 +169,112 @@ async function analyzeWriting(text) {
 async function generateStudyGuide(topic) {
   try {
     const prompt = `
-    Create a comprehensive study guide for "${topic}" in the following format:
+    Create a comprehensive study guide for "${topic}" with the following format:
 
     STUDY_NOTES:
-    [Detailed explanation of key concepts]
+    [Provide detailed explanation of key concepts, theories, and examples]
 
     RESOURCES:
-    - [Resource 1]
-    - [Resource 2]
-    - [Resource 3]
+    - [Resource 1: Include title and URL]
+    - [Resource 2: Include title and URL]
+    - [At least 3 relevant academic resources]
 
     QUIZ:
-    Q1. [Question]
-    A) [Option A]
-    B) [Option B]
-    C) [Option C]
-    Answer: [Letter of correct option]
+    [Generate exactly 5 multiple-choice questions that test understanding of key concepts]
+    Format each question as:
+    Q1. [Clear, specific question]
+    A) [Plausible option]
+    B) [Plausible option]
+    C) [Plausible option]
+    D) [Plausible option]
+    Correct: [Letter of correct answer]
+    Explanation: [Brief explanation of why this is correct]
 
-    Q2. [Question]
-    A) [Option A]
-    B) [Option B]
-    C) [Option C]
-    Answer: [Letter of correct option]
-
-    Q3. [Question]
-    A) [Option A]
-    B) [Option B]
-    C) [Option C]
-    Answer: [Letter of correct option]`;
+    [Repeat for Q2 through Q5]`;
 
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
 
-    // Parse sections using markers
+    // Parse sections using regex
     const studyNotesMatch = responseText.match(/STUDY_NOTES:\n([\s\S]*?)\n\nRESOURCES:/);
     const resourcesMatch = responseText.match(/RESOURCES:\n([\s\S]*?)\n\nQUIZ:/);
     const quizMatch = responseText.match(/QUIZ:\n([\s\S]*?)$/);
 
-    // Extract study notes with fallback
-    const studyNotes = studyNotesMatch?.[1]?.trim() || "I apologize, but I couldn't generate study notes. Please try rephrasing your topic or being more specific.";
+    // Extract study notes
+    const studyNotes = studyNotesMatch?.[1]?.trim() || 'No study notes available. Please try again with a more specific topic.';
 
-    // Extract resources with fallback
+    // Extract resources
     const resources = resourcesMatch?.[1]?.split('\n')
-      .map(r => r.trim())
-      .filter(r => r.startsWith('-'))
-      .map(r => r.substring(1).trim());
+        .map(r => r.trim())
+        .filter(r => r.startsWith('-'))
+        .map(r => r.substring(1).trim()) || [];
 
-    // If no resources found, provide a default resource
-    if (!resources.length) {
-      resources.push("Resource: **Wikipedia (https://wikipedia.org):** General information about " + topic);
-    }
-
-    // Extract and validate quiz questions
+    // Parse quiz questions
     const quiz = [];
     if (quizMatch?.[1]) {
-      // ...existing quiz parsing code...
-    }
+      const quizText = quizMatch[1].trim();
+      const questions = quizText.split(/Q\d+\./g).filter(q => q.trim());
 
-    // If no quiz questions found, add a default one
-    if (quiz.length === 0) {
-      quiz.push({
-        question: "What is the main concept of " + topic + "?",
-        options: [
-          "This question needs more context",
-          "Please try with a more specific topic",
-          "Information not available"
-        ],
-        correctAnswer: "Please try with a more specific topic"
+      questions.forEach((q) => {
+        const questionMatch = q.match(/(.*?)\nA\)(.*?)\nB\)(.*?)\nC\)(.*?)\nD\)(.*?)\nCorrect:\s*([A-D])/s);
+        
+        if (questionMatch) {
+          const [, question, optionA, optionB, optionC, optionD, correct] = questionMatch;
+          quiz.push({
+            question: question.trim(),
+            options: [
+              optionA.trim(),
+              optionB.trim(),
+              optionC.trim(),
+              optionD.trim()
+            ],
+            correctAnswer: correct.trim(),
+            explanation: q.match(/Explanation:\s*(.*?)(?:\n|$)/s)?.[1]?.trim() || ''
+          });
+        }
       });
     }
 
-    return { studyNotes, resources, quiz };
+    // If we don't have enough quiz questions, add defaults
+    if (quiz.length < 5) {
+      const defaultQuestions = [
+        {
+          question: `What is a key concept in ${topic}?`,
+          options: [
+            "Fundamental principles and theories",
+            "Historical development",
+            "Modern applications",
+            "Future implications"
+          ],
+          correctAnswer: "A",
+          explanation: "Understanding fundamental principles is essential for mastering any topic."
+        },
+        {
+          question: `How is ${topic} applied in practice?`,
+          options: [
+            "Through research methods",
+            "Through real-world applications",
+            "Through theoretical models",
+            "Through historical analysis"
+          ],
+          correctAnswer: "B",
+          explanation: "Practical applications demonstrate real-world relevance."
+        }
+      ];
+
+      while (quiz.length < 5) {
+        const defaultQ = defaultQuestions[quiz.length % defaultQuestions.length];
+        quiz.push({...defaultQ}); // Use spread to create a new object
+      }
+    }
+
+    return { 
+      studyNotes, 
+      resources: resources.length ? resources : ['No specific resources provided.'], 
+      quiz 
+    };
   } catch (error) {
-    const fallbackGuide = {
+  const fallbackGuide = {
       studyNotes: "I apologize, but I couldn't generate a study guide at this moment. This could be because:\n" +
                  "- The topic might be too broad or unclear\n" +
                  "- There might be an issue with the AI service\n" +
