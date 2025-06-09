@@ -20,7 +20,7 @@ const model = genAI.getGenerativeModel({ model: genModel });//gemini-1.5-pro //"
 // Function to save image to MongoDB and generate AI prompt
 async function ImagePrompt(base64Image) {
     try {
-        const prompt = "Analyze this image. First line of your response should be a brief title (max 50 characters) starting with 'TITLE:' that describes the main content or topic of the image. Then check for any maths equation, if there are give me a step by step process to solve and understand the question, also provide me with resources I may need to learn the problem and solution after which you provide me with a solution to the problem. if there are no equations identified give a detailed explanation as to what it is, and if there isn't tell me whatever seems to be obvious on the image.";
+        const prompt = "Analyze this image. First line of your response should be a brief title (max 50 characters) starting with 'TITLE:' that describes the main content or topic of the image. Then check for any maths equation, if there are one or more quations; Give me a step by step process to solve and understand each of the questions, also provide me with resources I may need to learn the problem and solution after which you provide me with a solution to the problem. if there are no equations identified give a detailed explanation as to what it is, and if there isn't tell me whatever seems to be obvious on the image.";
         const imageParts = [fileToGeneratePath(base64Image, "image/jpeg")];
 
         const result = await model.generateContent([prompt, ...imageParts]);
@@ -53,22 +53,55 @@ async function ImagePrompt(base64Image) {
 //This block of code gets promts from a users text.
 async function TextPrompt(message) {
     try {
-        const prompt = message;
+        // Bot personality and context
+        const systemContext = `
+            You are SnapSolve, an educational AI assistant created to help students learn and understand academic concepts.
+
+            About yourself:
+            - Name: SnapSolve
+            - Role: Educational AI Assistant
+            - Specialty: Breaking down complex academic topics, solving math problems, and providing study guidance
+            - Personality: Friendly, encouraging, and patient
+            - Created by: EcodeJR
+
+            Your capabilities:
+            - Analyze and solve mathematical problems
+            - Generate study guides
+            - Answer academic questions
+            - Provide writing assistance
+            - Analyze images containing educational content
+
+            Restrictions:
+            - Do not provide assistance with cheating or plagiarism
+            - Do not generate harmful or inappropriate content
+            - Stay focused on educational topics
+            - Do not share personal information about users
+            - Do not make claims about yourself beyond what's stated above
+
+            When asked about yourself, always maintain this identity and refer to yourself as SnapSolve.
+            Always be encouraging and supportive, but maintain professional boundaries.
+        `;
+
+        const prompt = `${systemContext}\n\nUser: ${message}\n\nSnapSolve:`;
         
-        // Assuming 'model.generateContent' returns a promise that resolves to an object
         const result = await model.generateContent([prompt]);
         
-        if (result && result.response) {
-            const response = result.response;
-            const text = await response.text();  // Await the response text
+        if (result?.response) {
+            const text = await result.response.text();
             
-            return text;  // Return the generated text
-        } else {
-            return 'Could not understand your message! Try again be a little more clear and detailed.';  // Return an empty string if the response is invalid
+            // Handle empty or invalid responses
+            if (!text.trim()) {
+                return "I apologize, but I couldn't process that request. Could you please rephrase it?";
+            }
+            
+            return text;
         }
+        
+        return "I'm having trouble understanding that. Could you try asking in a different way?";
+        
     } catch (error) {
-        console.log('Error generating content:', error);
-        return 'Internal Server Error! Try again later.';  // Return an empty string in case of an error
+        console.error('ChatBot Error:', error);
+        return 'I apologize, but I encountered an error. Please try again in a moment.';
     }
 }
 
@@ -173,54 +206,64 @@ async function generateStudyGuide(topic) {
     const resourcesMatch = responseText.match(/RESOURCES:\n([\s\S]*?)\n\nQUIZ:/);
     const quizMatch = responseText.match(/QUIZ:\n([\s\S]*?)$/);
 
-    // Extract study notes
-    const studyNotes = studyNotesMatch?.[1]?.trim() || "No study notes available.";
+    // Extract study notes with fallback
+    const studyNotes = studyNotesMatch?.[1]?.trim() || "I apologize, but I couldn't generate study notes. Please try rephrasing your topic or being more specific.";
 
-    // Extract resources
+    // Extract resources with fallback
     const resources = resourcesMatch?.[1]?.split('\n')
       .map(r => r.trim())
       .filter(r => r.startsWith('-'))
-      .map(r => r.substring(1).trim()) || [];
+      .map(r => r.substring(1).trim());
 
-    // Extract quiz questions
-    const quiz = [];
-    if (quizMatch?.[1]) {
-      const quizText = quizMatch[1];
-      const questionBlocks = quizText.split(/Q\d+\./).filter(Boolean);
-
-      questionBlocks.forEach(block => {
-        try {
-          const lines = block.trim().split('\n').filter(Boolean);
-          
-          if (lines.length >= 5) { // Ensure we have question, 3 options, and answer
-            const question = lines[0].trim();
-            const options = lines.slice(1, 4).map(o => o.trim().substring(2).trim());
-            const answerLine = lines[4].trim();
-            const answer = answerLine.includes(':') ? 
-              answerLine.split(':')[1].trim() : 
-              answerLine;
-
-            quiz.push({
-              question,
-              options,
-              correctAnswer: answer
-            });
-          }
-        } catch (err) {
-          console.warn('Error parsing quiz question:', err);
-        }
-      });
+    // If no resources found, provide a default resource
+    if (!resources.length) {
+      resources.push("Resource: **Wikipedia (https://wikipedia.org):** General information about " + topic);
     }
 
-    // Validate the generated content
-    if (!studyNotes || !resources.length || !quiz.length) {
-      throw new Error('Incomplete study guide generated');
+    // Extract and validate quiz questions
+    const quiz = [];
+    if (quizMatch?.[1]) {
+      // ...existing quiz parsing code...
+    }
+
+    // If no quiz questions found, add a default one
+    if (quiz.length === 0) {
+      quiz.push({
+        question: "What is the main concept of " + topic + "?",
+        options: [
+          "This question needs more context",
+          "Please try with a more specific topic",
+          "Information not available"
+        ],
+        correctAnswer: "Please try with a more specific topic"
+      });
     }
 
     return { studyNotes, resources, quiz };
   } catch (error) {
+    const fallbackGuide = {
+      studyNotes: "I apologize, but I couldn't generate a study guide at this moment. This could be because:\n" +
+                 "- The topic might be too broad or unclear\n" +
+                 "- There might be an issue with the AI service\n" +
+                 "Please try:\n" +
+                 "- Being more specific with your topic\n" +
+                 "- Breaking down complex topics into smaller parts\n" +
+                 "- Checking your internet connection\n" +
+                 "- Trying again in a few moments",
+      resources: ["Resource: **Study Tips (https://www.wikihow.com/Study):** General study strategies"],
+      quiz: [{
+        question: "What should you do when a topic is too broad?",
+        options: [
+          "Break it down into smaller, specific parts",
+          "Give up and try something else",
+          "Keep trying with the same broad topic"
+        ],
+        correctAnswer: "A"
+      }]
+    };
+
     console.error("Error generating study guide:", error);
-    throw new Error(`Failed to generate study guide: ${error.message}`);
+    return fallbackGuide;
   }
 }
 

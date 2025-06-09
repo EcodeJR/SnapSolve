@@ -8,6 +8,14 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 require('dotenv').config(); // Load environment variables from .env file
 // Ensure that the environment variables are loaded
+const rateLimit = require('express-rate-limit');
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 attempts
+    message: 'Too many login attempts, please try again later'
+});
+
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET_KEY || 'your_secret_key';
@@ -44,11 +52,19 @@ router.post('/signup', async (req, res) => {
         const token = jwt.sign({ userId: result.insertedId }, SECRET_KEY, { expiresIn: '3d' });
 
         // Sets the token in a cookie, httpOnly for security
-        res.cookie('token', token, {
-            httpOnly: true, 
-            secure: true, // Change to true when in production over HTTPS
-            sameSite: 'lax', // Needed for frontend/backend on different origins
-        });
+        const cookieOptions = {
+            httpOnly: true, // Prevents client-side access to the cookie through JavaScript
+            secure: process.env.NODE_ENV === 'production', // Only true in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
+            path: '/', // Cookie is available for all paths
+            domain: process.env.NODE_ENV === 'production' 
+                ? process.env.COOKIE_DOMAIN 
+                : 'localhost'
+        };
+
+        // Update the cookie setting in both signin and signup routes
+        res.cookie('token', token, cookieOptions);
 
         // Responds with success message and username
         res.status(201).json({ message: 'User registered successfully', userName: username, token: token });
@@ -61,7 +77,7 @@ router.post('/signup', async (req, res) => {
 
 
 // Sign-in route
-router.post('/signin', async (req, res) => {
+router.post('/signin', authLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -83,11 +99,19 @@ router.post('/signin', async (req, res) => {
         // Generates a JWT token
         const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '3d' });
         // Sends the token as an HTTP-only cookie
-        res.cookie('token', token, {
-            httpOnly: true, 
-            secure: true, // Use 'secure' in production with HTTPS // Change to true when in production
-            sameSite: 'lax' // Needed if frontend and backend are on different origins
-        });
+        const cookieOptions = {
+            httpOnly: true, // Prevents client-side access to the cookie through JavaScript
+            secure: process.env.NODE_ENV === 'production', // Only true in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
+            path: '/', // Cookie is available for all paths
+            domain: process.env.NODE_ENV === 'production' 
+                ? process.env.COOKIE_DOMAIN 
+                : 'localhost'
+        };
+
+        // Update the cookie setting in both signin and signup routes
+        res.cookie('token', token, cookieOptions);
 
         res.json({ message: 'Sign-in successful', token, userName: user.username });
     } catch (error) {
@@ -97,7 +121,7 @@ router.post('/signin', async (req, res) => {
 });
 
 // Request password reset
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', authLimiter, async (req, res) => {
     const { email } = req.body;
 
     try {

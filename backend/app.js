@@ -4,12 +4,16 @@ const indexRoutes = require('./routes/index');
 const authRoutes = require('./routes/auth');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+
 
 const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-
+app.use(helmet());
+app.use(xss());
 // Dynamically set allowed origins based on environment
 const allowedOrigins = [
     process.env.FRONTEND_URL_DEV,

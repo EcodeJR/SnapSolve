@@ -8,7 +8,6 @@ import { MdSunny } from "react-icons/md";
 import { RiMenuFold4Line } from "react-icons/ri";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import Cookies from 'js-cookie';
-import ScrollToTop from "../components/ScrollToTop";
 import StudyGuide from "../dashboard_components/StudyGuide";
 import TextAnalysis from "../dashboard_components/TextAnalysis";
 
@@ -68,7 +67,6 @@ const Dashboard = () => {
 
 return (
     <section className={`h-screen w-full flex ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <ScrollToTop />
         
         {/* Sidebar/History Panel */}
         <aside className={`

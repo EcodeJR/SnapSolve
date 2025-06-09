@@ -27,25 +27,56 @@ const StudyGuide = ({ darkMode, selectedChat, setHistoryUpdated }) => {
         }
     }, [selectedChat]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!topic.trim()) return;
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!topic.trim()) return;
 
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await studyGuide.generateGuide(topic);
-            setGuide(response.guide);
-           setHistoryUpdated(prev => !prev); // Trigger history update 
-           console.log(response.guide);
-        } catch (error) {
-            console.error('Error:', error);
-            setError(error.message || 'Failed to generate study guide');
-        } finally {
-            setLoading(false);
-            
+    setLoading(true);
+    setError(null);
+    try {
+        const response = await studyGuide.generateGuide(topic);
+        
+        // Validate response content
+        if (!response.guide || 
+            !response.guide.studyNotes || 
+            !response.guide.resources || 
+            !response.guide.quiz) {
+            throw new Error('Invalid study guide format received');
         }
-    };
+
+        // Check if we got the fallback content
+        if (response.guide.studyNotes.includes("I apologize, but I couldn't generate")) {
+            setError("Could not generate a complete study guide. Please try being more specific with your topic.");
+        }
+
+        setGuide(response.guide);
+        setHistoryUpdated(prev => !prev);
+    } catch (error) {
+        console.error('Study Guide Error:', error);
+        setError(
+            'Failed to generate study guide. Please try:\n' +
+            '• Using a more specific topic\n' +
+            '• Breaking down complex topics\n' +
+            '• Checking your connection\n' +
+            '• Trying again in a few moments'
+        );
+    } finally {
+        setLoading(false);
+    }
+};
+
+// Update error display component
+const ErrorMessage = ({ message }) => (
+    <div className={`p-4 mb-8 rounded-lg border ${
+        darkMode 
+            ? 'bg-red-900/20 border-red-800 text-red-200' 
+            : 'bg-red-50 border-red-200 text-red-600'
+    }`}>
+        {message.split('\n').map((line, i) => (
+            <p key={i} className="mb-1">{line}</p>
+        ))}
+    </div>
+);
 
 
     const formatStudyNotes = (notes) => {
@@ -113,44 +144,6 @@ const formatResources = (resources) => {
     }).filter(Boolean);
 };
 
-// Update the tailwind config to include styles for generated content
-
-    // Define markdown components with proper styling
-    // const markdownComponents = {
-    //     p: ({children}) => (
-    //         <p className={`${darkMode ? 'text-gray-200' : 'text-gray-700'} mb-4`}>
-    //             {children}
-    //         </p>
-    //     ),
-    //     h1: ({children}) => (
-    //         <h1 className={`${darkMode ? 'text-white' : 'text-gray-900'} text-2xl font-bold mb-4`}>
-    //             {children}
-    //         </h1>
-    //     ),
-    //     h2: ({children}) => (
-    //         <h2 className={`${darkMode ? 'text-white' : 'text-gray-900'} text-xl font-bold mb-3`}>
-    //             {children}
-    //         </h2>
-    //     ),
-    //     ul: ({children}) => (
-    //         <ul className="space-y-2 mb-4">
-    //             {children}
-    //         </ul>
-    //     ),
-    //     li: ({children}) => (
-    //         <li className={`flex items-start gap-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-    //             <span className="mt-2 w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"/>
-    //             <span>{children}</span>
-    //         </li>
-    //     ),
-    //     strong: ({children}) => (
-    //         <strong className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-    //             {children}
-    //         </strong>
-    //     )
-    // };
-
-
 
     return (
         <div className={`w-full h-[calc(100vh-160px)] flex flex-col overflow-hidden ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -158,15 +151,7 @@ const formatResources = (resources) => {
                 <div className="max-w-4xl mx-auto px-4 py-6">
                     {/* Input Section */}
                     <form onSubmit={handleSubmit} className="mb-8">
-                            {error && (
-                                <div className={`p-4 mb-8 rounded-lg border ${
-                                    darkMode 
-                                        ? 'bg-red-900/20 border-red-800 text-red-200' 
-                                        : 'bg-red-50 border-red-200 text-red-600'
-                                }`}>
-                                    {error}
-                                </div>
-                            )}
+                            {error && <ErrorMessage message={error} />}
                         <div className={`flex items-center gap-4 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border rounded-xl shadow-sm p-4`}>
                             <input
                                 type="text"
@@ -294,7 +279,8 @@ const formatResources = (resources) => {
 StudyGuide.propTypes = {
     darkMode: PropTypes.bool.isRequired,
     selectedChat: PropTypes.object,
-    setHistoryUpdated: PropTypes.func.isRequired
+    setHistoryUpdated: PropTypes.func.isRequired,
+    message: PropTypes.string.isRequired
 };
 
 export default StudyGuide;
