@@ -257,7 +257,7 @@ const formatResources = (resources) => {
                                             <ul className="space-y-2 pl-6">
                                                 {q.options.map((option, j) => (
                                                     <li key={j} className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-                                                        {['A', 'B', 'C'][j]}) {option}
+                                                        {['A', 'B', 'C', 'D'][j]}) {option}
                                                     </li>
                                                 ))}
                                             </ul>
