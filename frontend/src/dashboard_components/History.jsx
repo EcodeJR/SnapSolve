@@ -25,13 +25,44 @@ const fetchHistory = async () => {
 
         const allHistory = [
             ...chatHistory.map(item => ({ ...item, type: 'chat' })),
-            ...analysisHistory.map(item => ({ ...item, type: 'analyze' })), // Changed from 'analysis' to 'analyze'
+            ...analysisHistory.map(item => ({ ...item, type: 'analyze' })),
             ...studyHistory.map(item => ({ ...item, type: 'study' }))
         ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         setHistory(allHistory);
+        setError(null);
     } catch (error) {
-        setError(error.message);
+        if (error.response?.status === 401 || error.message.includes('No authentication token')) {
+            setError(
+                <div className="text-center">
+                    <p className="mb-4">Sign in to access your history</p>
+                    <div className="flex justify-center gap-4">
+                        <Link 
+                            to="/signin" 
+                            className={`px-4 py-2 rounded-lg ${
+                                darkMode 
+                                    ? 'bg-blue-600 hover:bg-blue-700' 
+                                    : 'bg-blue-500 hover:bg-blue-600'
+                            } text-white transition-colors`}
+                        >
+                            Sign In
+                        </Link>
+                        <Link 
+                            to="/signup" 
+                            className={`px-4 py-2 rounded-lg ${
+                                darkMode 
+                                    ? 'bg-green-600 hover:bg-green-700' 
+                                    : 'bg-green-500 hover:bg-green-600'
+                            } text-white transition-colors`}
+                        >
+                            Sign Up
+                        </Link>
+                    </div>
+                </div>
+            );
+        } else {
+            setError(error.message);
+        }
     } finally {
         setLoading(false);
     }
@@ -173,12 +204,20 @@ const handleDeleteClick = (e, item) => {
             <div className="flex-1 overflow-y-auto min-h-0"> {/* Add min-h-0 to allow scrolling */}
                 {loading ? (
                     <div className="flex justify-center">
-                        <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${darkMode ? 'border-gray-300' : 'border-gray-800'}`}></div>
+                        <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${
+                            darkMode ? 'border-gray-300' : 'border-gray-800'
+                        }`}></div>
                     </div>
                 ) : error ? (
-                    <div className="text-red-500 text-center">{error}</div>
+                    <div className={`p-6 rounded-lg ${
+                        darkMode ? 'bg-gray-800' : 'bg-gray-100'
+                    }`}>
+                        {error}
+                    </div>
                 ) : history.length === 0 ? (
-                    <div className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <div className={`text-center ${
+                        darkMode ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
                         No history found
                     </div>
                 ) : (

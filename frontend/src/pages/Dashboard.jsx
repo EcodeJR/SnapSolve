@@ -12,38 +12,64 @@ import StudyGuide from "../dashboard_components/StudyGuide";
 import TextAnalysis from "../dashboard_components/TextAnalysis";
 
 const Dashboard = () => {
-    const [darkMode, setDarkMode] = useState(false);
+    const [darkMode, setDarkMode] = useState(() => {
+        // Get darkMode from localStorage with a default value
+        return localStorage.getItem('darkMode') === 'true';
+    });
     // const [chatVisible, setChatVisible] = useState(false); // Control visibility of the chat
     const [username, setUsername] = useState("");
+    const [userLoggedIn, setUserLoggedIn] = useState(false);
     const [selectedChat, setSelectedChat] = useState(null); // Store the selected chat history
     const [showHistory, setShowHistory] = useState(false);
     const [historyUpdated, setHistoryUpdated] = useState(false); // New state to trigger History.jsx re-render
     const [mode, setMode] = useState('image'); // 'image', 'chat', 'study', 'analyze'
 
-    // Handle logout: Clear the username from state and localStorage
-    const handleLogout = () => {
-        setUsername(''); // Clear the username from state
-        Cookies.remove('token', { path: '/', secure: true, sameSite: 'Strict' });
-        Cookies.remove('username', { path: '/', secure: true, sameSite: 'Strict' });
-    };
-
+   // Check authentication status on mount and cookie changes
     useEffect(() => {
-        const user = Cookies.get('username');
-        setUsername(user);
-    }, [username]);
+        const checkAuth = () => {
+            const token = Cookies.get('token');
+            const user = Cookies.get('username');
+            
+            if (token && user) {
+                setUsername(user);
+                setUserLoggedIn(true);
+            } else {
+                setUsername('');
+                setUserLoggedIn(false);
+            }
+        };
 
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
-        localStorage.setItem('darkMode', darkMode);
+        checkAuth();
+        // Check auth status every 5 minutes
+        const interval = setInterval(checkAuth, 300000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleLogout = () => {
+        // Clear all auth-related cookies
+        Cookies.remove('token', { path: '/' });
+        Cookies.remove('username', { path: '/' });
+        
+        // Update state
+        setUsername('');
+        setUserLoggedIn(false);
+        
+        // Navigate to home
+        navigate('/', { replace: true });
     };
 
-    // const toggleChat = () => {
-    //     setChatVisible(true); // Show the chat component
-    // };
 
-    // const toggleImage = () => {
-    //     setChatVisible(false); // Show the image component
-    // };
+    // Update darkMode handling
+    const toggleDarkMode = () => {
+        setDarkMode(prev => {
+            const newValue = !prev;
+            localStorage.setItem('darkMode', String(newValue));
+            return newValue;
+        });
+    };
+
+
     const toggleHistoryBTN = () => {
         setShowHistory(!showHistory);
     }
@@ -111,34 +137,40 @@ return (
                         >
                             <RiMenuFold4Line className="text-2xl" />
                         </button>
-                        <h5 className={`${"text-xs md:text-md"} 
-                        ${darkMode ? 'text-gray-200' : 'text-gray-600'}`}>
-                            {username ? `Hey ${username}, Welcome` : 'Hey Explorer, Welcome'}
-                        </h5>
+                        <h5 className={`text-xs md:text-md ${darkMode ? 'text-gray-200' : 'text-gray-600'}`}>
+                                {userLoggedIn 
+                                    ? `Hey ${username}, Welcome back!` 
+                                    : 'Hey Explorer, Welcome to SnapSolve'}
+                            </h5>
                     </div>
                     
                     <div className="flex items-center space-x-4">
                         <button 
-                            onClick={toggleDarkMode}
-                            className={`p-2 rounded-full transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
-                        >
-                            {darkMode ? <MdSunny className="text-xl" /> : <IoMdMoon className="text-xl" />}
-                        </button>
-                        
-                        {username ? (
-                            <button 
-                                onClick={handleLogout}
-                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                onClick={toggleDarkMode}
+                                className={`p-2 rounded-full transition-colors ${
+                                    darkMode 
+                                        ? 'hover:bg-gray-700 text-gray-300' 
+                                        : 'hover:bg-gray-100 text-gray-600'
+                                }`}
+                                aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
                             >
-                                Logout
+                                {darkMode ? <MdSunny className="text-xl" /> : <IoMdMoon className="text-xl" />}
                             </button>
-                        ) : (
-                            <Link 
-                                to='/signin'
-                                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                            >
-                                Login
-                            </Link>
+                        
+                        {userLoggedIn ? (
+                                <button 
+                                    onClick={handleLogout}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    Logout
+                                </button>
+                            ) : (
+                                <Link 
+                                    to='/signin'
+                                    className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                >
+                                    Login
+                                </Link>
                         )}
                     </div>
                 </div>

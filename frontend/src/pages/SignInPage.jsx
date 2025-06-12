@@ -28,18 +28,30 @@ const SignInPage = () => {
     const handleSignIn = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setMessage('');
 
         try {
             const data = await auth.signin({ email, password });
             
             if (data.token) {
-                Cookies.set('token', data.token, { expires: 3 });
-                Cookies.set('username', data.userName, { expires: 3 });
+                Cookies.set('token', data.token, { 
+                expires: 3,
+                path: '/'
+            });
+            
+            // Add username to cookies
+            Cookies.set('username', data.userName, {
+                expires: 3,
+                path: '/'
+            });
                 setStatus(200);
                 setMessage("Sign In Successful!");
                 setEmail("");
                 setPassword("");
-                navigate('/dashboard', { replace: true });
+                // Redirect to dashboard after successful sign in
+                setTimeout(() => {
+                    navigate('/dashboard', { replace: true });
+                }, 1500);
             }
         } catch (err) {
             setStatus(err.response?.status);

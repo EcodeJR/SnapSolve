@@ -12,28 +12,51 @@ const api = axios.create({
     withCredentials: true // Add this for CORS
 });
 
+
 // Add request interceptor to add auth token
-api.interceptors.request.use((config) => {
-  const token = Cookies.get('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+api.interceptors.request.use(
+    (config) => {
+        const token = Cookies.get('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 //Removed this to allow users have acces to dashboad while not logged in.
 //Remember to fix it, by implementing the 10 trail messages by users not registered.
+// Single response interceptor for error handling
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            // Clear invalid token
+            Cookies.remove('token');
+        }
+        return Promise.reject(error);
+    }
+);
 
-// api.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     if (error.response?.status === 401) {
-//       Cookies.remove('token');
-//       window.location.href = '/signin';
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+api.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401) {
+            // Don't redirect, just propagate the error
+            return Promise.reject(new Error('Authentication required to access history'));
+        }
+        console.error('API Error:', {
+            url: error.config?.url,
+            method: error.config?.method,
+            status: error.response?.status,
+            message: error.message
+        });
+        return Promise.reject(error);
+    }
+);
 
 api.interceptors.response.use(
     response => response,
@@ -93,9 +116,20 @@ export const chat = {
   },
 
   getHistory: async () => {
-    const response = await api.get('/main/chat-history');
-    return response.data;
-  },
+        try {
+            const token = Cookies.get('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+            const response = await api.get('/main/chat-history');
+            return response.data;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                throw new Error('Please sign in to view your history');
+            }
+            throw error;
+        }
+    },
 
   deleteMessage: async (messageId) => {
     const response = await api.delete(`/main/delete-history/${messageId}`);
@@ -127,10 +161,17 @@ export const analyze = {
     },
     getHistory: async () => {
         try {
+            const token = Cookies.get('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
             const response = await api.get('/main/analysis-history');
             return response.data;
         } catch (error) {
-            throw new Error(error.response?.data?.error || 'Failed to fetch analysis history');
+            if (error.response?.status === 401) {
+                throw new Error('Please sign in to view your history');
+            }
+            throw error;
         }
     },
     deleteAnalysis: async (analysisId) => {
@@ -154,10 +195,17 @@ export const studyGuide = {
     },
     getHistory: async () => {
         try {
+            const token = Cookies.get('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
             const response = await api.get('/main/study-guide-history');
             return response.data;
         } catch (error) {
-            throw new Error(error.response?.data?.error || 'Failed to fetch study guide history');
+            if (error.response?.status === 401) {
+                throw new Error('Please sign in to view your history');
+            }
+            throw error;
         }
     },
     deleteGuide: async (guideId) => {

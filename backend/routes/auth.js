@@ -100,7 +100,7 @@ router.post('/signin', authLimiter, async (req, res) => {
         const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '3d' });
         // Sends the token as an HTTP-only cookie
         const cookieOptions = {
-            httpOnly: true, // Prevents client-side access to the cookie through JavaScript
+            httpOnly: false, // Prevents client-side access to the cookie through JavaScript
             secure: process.env.NODE_ENV === 'production', // Only true in production
             sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
             maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
@@ -112,8 +112,12 @@ router.post('/signin', authLimiter, async (req, res) => {
 
         // Update the cookie setting in both signin and signup routes
         res.cookie('token', token, cookieOptions);
+        res.cookie('username', user.username, cookieOptions);
 
-        res.json({ message: 'Sign-in successful', token, userName: user.username });
+        res.json({ message: 'Sign-in successful', 
+            token, 
+            userName: user.username 
+        });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error. Check Network and Try Again.' });
         console.log("Sign In Error:", error);

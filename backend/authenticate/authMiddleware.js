@@ -1,29 +1,38 @@
-// authMiddleware.js
 const jwt = require('jsonwebtoken');
-const secretKey = process.env.JWT_SECRET_KEY; // Ensure this is set in your .env file
+const secretKey = process.env.JWT_SECRET_KEY;
 
 const authenticateOptional = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        console.log("No token provided. Proceeding without authentication.");
-        req.userId = null; // No user ID for unauthenticated users
-        return next();     // Let unauthenticated users pass
-    }
-
-    const token = authHeader.split(' ')[1];
-
     try {
+        const authHeader = req.headers.authorization;
+        
+        if (!authHeader) {
+            console.log("No Authorization header");
+            req.userId = null;
+            return next();
+        }
+
+        if (!authHeader.startsWith('Bearer ')) {
+            console.log("Invalid Authorization header format");
+            req.userId = null;
+            return next();
+        }
+
+        const token = authHeader.split(' ')[1];
+        
+        if (!token) {
+            console.log("No token found in Authorization header");
+            req.userId = null;
+            return next();
+        }
+
         const decoded = jwt.verify(token, secretKey);
-        req.userId = decoded.userId; // Attach userId to the request object for authenticated users
+        req.userId = decoded.userId;
         next();
     } catch (err) {
-        // console.error('JWT Verification Error:', err.message);
-        // Proceeding without userId if token is invalid or expired
+        console.error('Auth Error:', err.message);
         req.userId = null;
-        return next();  // Let users with invalid tokens interact without saving
+        next();
     }
 };
-
 
 module.exports = authenticateOptional;

@@ -219,17 +219,18 @@ router.post("/generate", authenticateOptional, async (req, res) => {
 router.get('/chat-history', async (req, res) => {
     try {
         const authHeader = req.headers['authorization'];
-
-        // Checking if the Authorization header is present and properly formatted
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ error: 'Unauthorized access, no token provided' });
+            return res.status(401).json({ error: 'No authentication token provided' });
         }
 
-        // Extracts the token (remove 'Bearer ' prefix)
         const token = authHeader.split(' ')[1];
+        let decoded;
+        try {
+            decoded = jwt.verify(token, secretKey);
+        } catch (err) {
+            return res.status(401).json({ error: 'Invalid or expired token' });
+        }
 
-        // Verifying the JWT and extract userId
-        const decoded = jwt.verify(token, secretKey);
         const userId = decoded.userId;
 
         const db = await connectToDatabase();
