@@ -173,7 +173,7 @@ const Image = ({ setHistoryUpdated, darkMode  }) => {
                                     className='w-24 md:w-32 lg:w-40 animate-pulse' 
                                 />
                                 <p className={`mt-6 ${darkMode ? 'text-gray-400' : 'text-gray-500'} text-lg text-center`}>
-                                    Upload an image to start the conversation
+                                    Upload an image to get step-by-step solutions and explanations to all problems and questions.
                                 </p>
                             </div>
                         ) : (
