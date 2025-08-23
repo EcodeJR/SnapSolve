@@ -1,6 +1,6 @@
 # SnapSolve - Your AI-Powered Study Assistant
 
-![SnapSolve Logo](./frontend/src/assets/logo.png)
+<!-- ![SnapSolve Logo](./frontend/src/assets/logo.png) -->
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-blue)](https://snap-solve-ecodejr.vercel.app)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
@@ -63,7 +63,7 @@ SnapSolve/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/snapsolve.git
+git clone https://github.com/EcodeJR/snapsolve.git
 cd snapsolve
 ```
 
@@ -128,7 +128,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 EcodeJR - [@EcodeJR](https://twitter.com/EcodeJR)
 
-Project Link: [https://github.com/yourusername/snapsolve](https://github.com/yourusername/snapsolve)
+Project Link: [https://github.com/EcodeJR/snapsolve](https://github.com/EcodeJR/snapsolve)
 
 ## 🙏 Acknowledgments
 
