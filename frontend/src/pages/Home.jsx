@@ -12,19 +12,24 @@ import Footer from "../components/Footer";
 //others
 import { NavLink } from "react-router-dom";
 
-// gsap.registerPlugin(SplitText);
+import { CSSPlugin } from 'gsap/CSSPlugin';
+
+// Register GSAP plugins
+gsap.registerPlugin(CSSPlugin);
 const Home = () => {
-    let heroText = useRef(null);
+    const heroText = useRef(null);
     // let MySplitText = new SplitText(heroText, {type: 'chars'});
     // let chars = MySplitText.chars;
 
     useEffect(() => {
-        gsap.from(heroText, {
-            yPercent: 130,
-            stagger:0.02,
-            ease: 'back.out',
-            duration: 1
-        });
+        if (heroText) {
+            gsap.from(heroText, {
+                y: '130%',
+                stagger: 0.02,
+                ease: 'back.out',
+                duration: 1
+            });
+        }
 
     }, [])
 

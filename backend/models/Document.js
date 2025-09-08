@@ -9,7 +9,7 @@ class Document {
         this.correctedText = correctedText;
         this.suggestions = suggestions;
         this.type = 'analysis';
-        this.createdAt = new Date(); // Add this line
+        this.createdAt = new Date();
     }
 }
 

@@ -9,7 +9,7 @@ class StudyGuide {
         this.resources = resources;
         this.quiz = quiz;
         this.type = 'study';
-        this.createdAt = new Date(); // Add this line
+        this.createdAt = new Date();
     }
 }
 
